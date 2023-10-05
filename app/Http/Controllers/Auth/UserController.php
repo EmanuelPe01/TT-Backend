@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Models\User;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -52,6 +53,31 @@ class UserController extends Controller
         
     }
 
+    public function login(Request $request) {
+        try {
+            $request->validate([
+                'email' => 'required|email',
+                'password' => 'required',
+            ]);
+        
+            $credentials = $request->only('email', 'password');
+        
+            if (Auth::attempt($credentials)) {
+                $user = Auth::user();
+                //El plugin PHP Intelephense marca como error la funcion createToken, pero hay que hacer caso omiso
+                $token = $user->createToken('token')->plainTextToken;
+        
+                return response()->json(['token' => $token ,'user'=>$user], 200);
+            }
+
+            return response()->json(['message' => 'Credenciales inválidas'], 401);
+        } catch (\Illuminate\Database\QueryException $e){
+            return response()->json([
+                'message' => 'El usuario no está registrado',
+                'error' => $e->getMessage()
+            ], 500);
+        } 
+    }
     
     public function show($id)
     {
