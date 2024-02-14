@@ -8,10 +8,10 @@ use App\Http\Controllers\Auth\UserController;
 use App\Http\Controllers\RolController;
 
 //Middleware
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    //Route::get('/check-status',[UserController::class,'checkStatus']);
+    Route::post('/logout', [UserController::class, 'logout']);
 });
-
 
 //Usuarios
 Route::post('/registerClient', [UserController::class, 'store']);

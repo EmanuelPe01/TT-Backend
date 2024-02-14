@@ -105,9 +105,18 @@ class UserController extends Controller
     }
 
     
-    public function update(Request $request, $id)
+    public function logout(Request $request)
     {
-        //
+        $user = $request->user();
+
+        if($user) {
+            $user->tokens()->delete();
+            return response()->json(200);
+        }
+
+        return response()->json([
+            'message' => 'Error en el servidor, intente más tarde'
+        ], 500);
     }
 
     public function destroy($id)
