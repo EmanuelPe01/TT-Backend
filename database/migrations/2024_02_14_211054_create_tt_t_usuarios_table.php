@@ -8,9 +8,9 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('TT_T_Usuario', function (Blueprint $table) {
+        Schema::create('tt_t_usuario', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_rol')->references('id')->on('TT_T_Rol');
+            $table->unsignedBigInteger('id_rol')->references('id')->on('tt_t_rol');
             $table->string('name');
             $table->string('firstSurname');
             $table->string('secondSurname');
@@ -24,6 +24,6 @@ return new class extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('tt_t_usuario');
     }
 };

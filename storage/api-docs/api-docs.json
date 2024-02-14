@@ -1,0 +1,233 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API de proyecto TT",
+        "description": "Se implementan todos los métodos HTTP soportados por el Backend",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/createUser": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Creación de un usuario",
+                "description": "Se crea un usuario",
+                "operationId": "2ecb32257bbde019abcc0fcfe680a018",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id_rol": {
+                                        "type": "integer"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "firstSurname": {
+                                        "type": "string"
+                                    },
+                                    "secondSurname": {
+                                        "type": "string"
+                                    },
+                                    "telephone": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Se almacena un usuario."
+                    },
+                    "default": {
+                        "description": "Ha ocurrido un error."
+                    }
+                }
+            }
+        },
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Usuario inicia sesión",
+                "description": "El usuario inicia sesión",
+                "operationId": "d33fa59eac86d58bb7a93b3ff8a3b7f1",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Retorna un token para el usuario."
+                    },
+                    "401": {
+                        "description": "Credenciales inválidas."
+                    },
+                    "422": {
+                        "description": "El usuario no existe."
+                    },
+                    "500": {
+                        "description": "Error en el servidor."
+                    }
+                }
+            }
+        },
+        "/api/allUsers": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Se obtienen todos los usuarios",
+                "description": "Se obtien una lista de todos los usuarios registrados",
+                "operationId": "0ab90601a4f80090a3e56b785984047a",
+                "responses": {
+                    "200": {
+                        "description": "Retorna la informacion de todos los usuarios"
+                    },
+                    "500": {
+                        "description": "Error en la base de datos"
+                    },
+                    "418": {
+                        "description": "Error general"
+                    }
+                }
+            }
+        },
+        "/api/logout": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Cerrar sesión",
+                "description": "Cierre de sesión de usuario",
+                "operationId": "29573ceac77e01db83ed67bd710fc374",
+                "responses": {
+                    "200": {
+                        "description": "Cierre de sesión exitoso."
+                    },
+                    "default": {
+                        "description": "Ha ocurrido un error."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/check-status": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Verificacion de token",
+                "description": "Se verifica si el token esta autorizado o no",
+                "operationId": "f5dd2f9a5977a73a8a1ab9e6347c2dea",
+                "responses": {
+                    "200": {
+                        "description": "Retorna el usuario y el token"
+                    },
+                    "401": {
+                        "description": "No autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/createRole": {
+            "post": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Creación de un rol",
+                "description": "Se almacena un rol para usuario",
+                "operationId": "2491813e006d488fbb8e9eb5c06991c6",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "rol_name": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Se almacena un role."
+                    },
+                    "400": {
+                        "description": "Duplicidad de valores."
+                    },
+                    "500": {
+                        "description": "Error en la base de datos"
+                    }
+                }
+            }
+        },
+        "/api/allRoles": {
+            "get": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Se obtienen todos los roles",
+                "description": "Se obtienen todos los roles disponibles",
+                "operationId": "66c86cf383a71df81ff3795b1c374a9d",
+                "responses": {
+                    "200": {
+                        "description": "Retorna la informacion de todos los roles"
+                    },
+                    "default": {
+                        "description": "Error"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    }
+}

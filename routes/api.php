@@ -1,23 +1,18 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Auth\UserController;
+use App\Http\Controllers\RollController;
 use Illuminate\Support\Facades\Route;
 
-//Controllers
-use App\Http\Controllers\Auth\UserController;
-use App\Http\Controllers\RolController;
 
-//Middleware
-Route::group(['middleware' => ['auth:sanctum']], function () {
-    //Route::get('/check-status',[UserController::class,'checkStatus']);
-    Route::post('/logout', [UserController::class, 'logout']);
-});
+Route::post('/createRole', [RollController::class, 'store']);
+Route::get('/allRoles', [RollController::class, 'getAllRoles']);
 
-//Usuarios
-Route::post('/registerClient', [UserController::class, 'store']);
-Route::post('/login', [UserController::class, 'login']);
+Route::post('/createUser', [UserController::class, 'store']);
+Route::post('/login', [UserController::class, 'login'])->name('login');
 Route::get('/allUsers', [UserController::class, 'getAllUsers']);
 
-//Roles
-Route::post('/createRole', [RolController::class, 'store']);
-Route::get('/allRoles', [RolController::class, 'getAllRoles']);
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::get('/check-status',[UserController::class,'checkStatus']);
+    Route::post('/logout', [UserController::class, 'logout']);
+});

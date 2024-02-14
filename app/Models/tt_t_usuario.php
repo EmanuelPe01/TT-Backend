@@ -2,18 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\tt_t_rol as Rol;
 
-
-class User extends Authenticatable
+class tt_t_usuario extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
+    protected $table = 'tt_t_usuario';
     
-    protected $table = 'TT_T_Usuario';
     protected $fillable = [
         'name',
         'firstSurname',
@@ -40,5 +39,4 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Rol::class, 'id_rol');
     }
-
 }

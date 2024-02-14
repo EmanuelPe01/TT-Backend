@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Rol extends Model
+class tt_t_rol extends Model
 {
     use HasFactory;
-    protected $table = 'TT_T_Rol';
+    protected $table = 'tt_t_rol';
 
     protected $fillable = [
         'rol_name'

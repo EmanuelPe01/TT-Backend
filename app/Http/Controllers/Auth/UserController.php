@@ -2,15 +2,51 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Models\User;
-
+use App\Models\tt_t_usuario as User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
+
+/**
+ * @OA\Info(
+ *      version="1.0.0",
+ *      title="API de proyecto TT",
+ *      description="Se implementan todos los métodos HTTP soportados por el Backend"
+ * )
+*/
+
 class UserController extends Controller
 {
-    
+     /**
+     * Se crea un usuario
+     *
+     * @OA\Post(
+     *     path="/api/createUser",
+     *     tags={"Users"},
+     *     summary="Creación de un usuario",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="id_rol", type="integer"),
+     *             @OA\Property(property="name", type="string"), 
+     *             @OA\Property(property="firstSurname", type="string"),
+     *             @OA\Property(property="secondSurname", type="string"),
+     *             @OA\Property(property="telephone", type="string"), 
+     *             @OA\Property(property="email", type="string"),
+     *             @OA\Property(property="password", type="string"),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Se almacena un usuario."
+     *     ),
+     *     @OA\Response(
+     *         response="default",
+     *         description="Ha ocurrido un error."
+     *     )
+     * )
+     */
     
     public function store(Request $request)
     {
@@ -47,7 +83,6 @@ class UserController extends Controller
                 'message' => 'Error de validación',
                 'errors' => $e->errors()
             ], 400);
-        
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json([
                 'message' => 'Error en la base de datos',
@@ -57,31 +92,85 @@ class UserController extends Controller
         
     }
 
-    public function login(Request $request) {
+    /**
+     * El usuario inicia sesión
+     *
+     * @OA\Post(
+     *     path="/api/login",
+     *     tags={"Users"},
+     *     summary="Usuario inicia sesión",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="email", type="string"),
+     *             @OA\Property(property="password", type="string"),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Retorna un token para el usuario."
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Credenciales inválidas."
+     *     ),
+     *    @OA\Response(
+     *         response=422,
+     *         description="El usuario no existe."
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error en el servidor."
+     *     )
+     * )
+     */
+    public function login(Request $request)
+    {
         try {
             $request->validate([
-                'email' => 'required|email',
+                'email' => 'required|email|exists:tt_t_usuario,email',
                 'password' => 'required',
             ]);
-        
+
             $credentials = $request->only('email', 'password');
-        
+
             if (Auth::attempt($credentials)) {
                 $user = Auth::user();
-                //El plugin PHP Intelephense marca como error la funcion createToken, pero hay que hacer caso omiso
+                $user->load('rol');
                 $token = $user->createToken('token')->plainTextToken;
-                $user->rol;
-                return response()->json(['token' => $token ,'user'=>$user], 200);
+                
+                return response()->json(['token' => $token, 'user' => $user], 200);
             }
 
             return response()->json(['message' => 'Credenciales inválidas'], 401);
-        } catch (\Illuminate\Database\QueryException $e){
-            return response()->json([
-                'message' => 'El usuario no está registrado',
-                'error' => $e->getMessage()
-            ], 500);
-        } 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error general', 'detail' => $e->getMessage()], 500);
+        }
     }
+
+    /**
+     * Se obtien una lista de todos los usuarios registrados
+     *
+     * @OA\Get(
+     *     path="/api/allUsers",
+     *     tags={"Users"},
+     *     summary="Se obtienen todos los usuarios",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Retorna la informacion de todos los usuarios"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error en la base de datos"
+     *     ),
+     *     @OA\Response(
+     *         response=418,
+     *         description="Error general"
+     *     )
+     * )
+    */
     
     public function getAllUsers()
     {
@@ -104,23 +193,72 @@ class UserController extends Controller
 
     }
 
+    /**
+     * Cierre de sesión de usuario
+     * 
+     * @OA\Post(
+     *     path="/api/logout",
+     *     tags={"Users"},
+     *     summary="Cerrar sesión",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Cierre de sesión exitoso."
+     *     ),
+     *     @OA\Response(
+     *         response="default",
+     *         description="Ha ocurrido un error."
+     *     )
+     * )
+     *
+     * @OA\SecurityScheme(
+     *     type="http",
+     *     securityScheme="bearerAuth",
+     *     scheme="bearer",
+     *     bearerFormat="JWT"
+     * )
+     */
     
     public function logout(Request $request)
     {
         $user = $request->user();
-
-        if($user) {
+    
+        if ($user) {
             $user->tokens()->delete();
-            return response()->json(200);
+            return response()->json(['message' => 'Cierre de sesión exitoso'], 200);
         }
 
-        return response()->json([
-            'message' => 'Error en el servidor, intente más tarde'
-        ], 500);
+        return response()->json(['message' => 'No se pudo encontrar el usuario autenticado'], 500);
     }
 
     public function destroy($id)
     {
         //
+    }
+    
+    /**
+         * Se verifica si el token esta autorizado o no
+         *
+         * @OA\Get(
+         *     path="/api/check-status",
+         *     tags={"Users"},
+         *     summary="Verificacion de token",
+         *     security={{"bearerAuth": {}}},
+         *     @OA\Response(
+         *         response=200,
+         *         description="Retorna el usuario y el token"
+         *     ),
+         *     @OA\Response(
+         *         response=401,
+         *         description="No autorizado"
+         *     )
+         * )
+         */
+    public function checkStatus(Request $request)
+    {
+        $user = $request->user();
+        if($user){
+            return response()->json(['token'=>str_replace('Bearer ', '', $request->header('authorization')), 'user'=>$user],200);
+        }
     }
 }
