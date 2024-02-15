@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Auth;
 
 use App\Models\tt_t_usuario as User;
 use App\Http\Controllers\Controller;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+use App\Mail\RecoveryPasswordMail;
 
 /**
  * @OA\Info(
@@ -260,5 +263,36 @@ class UserController extends Controller
         if($user){
             return response()->json(['token'=>str_replace('Bearer ', '', $request->header('authorization')), 'user'=>$user],200);
         }
+    }
+
+    public function recoveryPassword(Request $request) 
+    {
+        try {
+            $request->validate([
+                'email' => 'required|email',
+            ]);
+
+            $email = $request->email;
+            $user = User::where('email', $email)->first();
+
+            if($user) {
+                $token = Str::random(60);
+                $user->update(['recuperar_token' => $token]);
+                Mail::to($user->email)->send(new RecoveryPasswordMail($user));
+                return response()->json([
+                    'message' => 'Se ha enviado un correo electrónico con las instrucciones para recuperar tu contraseña.'
+                ], 200);
+            }
+            
+            return response()->json([
+                'message' => 'El usuario no existe'
+            ], 404);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Error general',
+                'error' => $e->getMessage()
+            ], 418);
+        }
+
     }
 }

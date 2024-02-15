@@ -11,6 +11,7 @@ Route::get('/allRoles', [RollController::class, 'getAllRoles']);
 Route::post('/createUser', [UserController::class, 'store']);
 Route::post('/login', [UserController::class, 'login'])->name('login');
 Route::get('/allUsers', [UserController::class, 'getAllUsers']);
+Route::post('/recoveryPassword', [UserController::class, 'recoveryPassword']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/check-status',[UserController::class,'checkStatus']);

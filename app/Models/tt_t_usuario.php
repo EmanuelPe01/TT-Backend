@@ -21,6 +21,7 @@ class tt_t_usuario extends Authenticatable
         'email',
         'password',
         'id_rol',
+        'recuperar_token'
     ];
 
     protected $hidden = [
@@ -28,7 +29,8 @@ class tt_t_usuario extends Authenticatable
         'remember_token',
         'created_at',
         'updated_at',
-        'id_rol'
+        'id_rol',
+        'recuperar_token'
     ];
 
     protected $casts = [
