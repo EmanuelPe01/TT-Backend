@@ -32,10 +32,10 @@ class UserController extends Controller
      *         required=true,
      *         @OA\JsonContent(
      *             @OA\Property(property="id_rol", type="integer"),
-     *             @OA\Property(property="name", type="string"), 
+     *             @OA\Property(property="name", type="string"),
      *             @OA\Property(property="firstSurname", type="string"),
      *             @OA\Property(property="secondSurname", type="string"),
-     *             @OA\Property(property="telephone", type="string"), 
+     *             @OA\Property(property="telephone", type="string"),
      *             @OA\Property(property="email", type="string"),
      *             @OA\Property(property="password", type="string"),
      *         )
@@ -198,7 +198,7 @@ class UserController extends Controller
 
     /**
      * Cierre de sesión de usuario
-     * 
+     *
      * @OA\Post(
      *     path="/api/logout",
      *     tags={"Users"},
@@ -265,7 +265,34 @@ class UserController extends Controller
         }
     }
 
-    public function recoveryPassword(Request $request) 
+    /**
+     * Se envía correo para recuperar contraseña
+     *
+     * @OA\Post(
+     *     path="/api/recoveryPassword",
+     *     tags={"Users"},
+     *     summary="Se envía correo con instrucciones",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 @OA\Property(property="email", type="string")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Se envió el correo correctamente"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Datos inválidos"
+     *     )
+     * )
+     */
+
+    public function recoveryPassword(Request $request)
     {
         try {
             $request->validate([

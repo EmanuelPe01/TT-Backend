@@ -166,6 +166,39 @@
                 ]
             }
         },
+        "/api/recoveryPassword": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Se envía correo con instrucciones",
+                "description": "Se envía correo para recuperar contraseña",
+                "operationId": "e7ee48acdb38c184698309506401a516",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Se envió el correo correctamente"
+                    },
+                    "401": {
+                        "description": "Datos inválidos"
+                    }
+                }
+            }
+        },
         "/api/createRole": {
             "post": {
                 "tags": [
