@@ -303,11 +303,12 @@ class UserController extends Controller
             $user = User::where('email', $email)->first();
 
             if($user) {
-                $token = Str::random(60);
+                $token = Str::random(20);
                 $user->update(['recuperar_token' => $token]);
                 Mail::to($user->email)->send(new RecoveryPasswordMail($user));
                 return response()->json([
-                    'message' => 'Se ha enviado un correo electrónico con las instrucciones para recuperar tu contraseña.'
+                    'message' => 'Se ha enviado un correo electrónico con las instrucciones para recuperar tu contraseña.',
+                    'token' => $token
                 ], 200);
             }
             
@@ -320,6 +321,49 @@ class UserController extends Controller
                 'error' => $e->getMessage()
             ], 418);
         }
+    }
 
+    public function validateRecoveryToken(string $token) {
+        try {
+            $user = User::where('recuperar_token', $token)->first();
+            
+            if($user) {
+                return response()->json(['message' => 'Token válido'], 200);
+            }
+            return response()->json(['message' => 'Token inválido'], 404);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json([
+                'message' => 'Error en la base de datos',
+                'error' => $e->getMessage()
+            ], 500);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Error general',
+                'error' => $e->getMessage()
+            ], 418);
+        }
+    }
+
+    public function restorePassword (Request $request, string $token) {
+        try {
+            $password = $request -> password;
+            $user = User::where('recuperar_token', $token)->first();
+            
+            if($user) {
+                $user->update(['password' => $password]);
+                return response()->json(['message' => 'Contraseña almacenada correctamente'], 201);
+            }
+            return response()->json(['message' => 'Token inválido'], 404);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json([
+                'message' => 'Error en la base de datos',
+                'error' => $e->getMessage()
+            ], 500);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Error general',
+                'error' => $e->getMessage()
+            ], 418);
+        }
     }
 }
