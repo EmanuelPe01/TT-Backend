@@ -240,23 +240,23 @@ class UserController extends Controller
     }
     
     /**
-         * Se verifica si el token esta autorizado o no
-         *
-         * @OA\Get(
-         *     path="/api/check-status",
-         *     tags={"Users"},
-         *     summary="Verificacion de token",
-         *     security={{"bearerAuth": {}}},
-         *     @OA\Response(
-         *         response=200,
-         *         description="Retorna el usuario y el token"
-         *     ),
-         *     @OA\Response(
-         *         response=401,
-         *         description="No autorizado"
-         *     )
-         * )
-         */
+     * Se verifica si el token esta autorizado o no
+     *
+     * @OA\Get(
+     *     path="/api/check-status",
+     *     tags={"Users"},
+     *     summary="Verificacion de token",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Retorna el usuario y el token"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="No autorizado"
+     *     )
+     * )
+     */
     public function checkStatus(Request $request)
     {
         $user = $request->user();
@@ -265,34 +265,35 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * Se envía correo para recuperar contraseña
+     /**
+     * Envía un correo electrónico para cambiar la contraseña
      *
-     * @OA\Post(
-     *     path="/api/recoveryPassword",
+     * @OA\post(
+     *     path="/api/sendEmailToRestorePassword",
      *     tags={"Users"},
-     *     summary="Se envía correo con instrucciones",
+     *     summary="Se genera un token de un uso para cambiar la contraseña del usuario",
      *     @OA\RequestBody(
      *         required=true,
-     *         @OA\MediaType(
-     *             mediaType="application/json",
-     *             @OA\Schema(
-     *                 @OA\Property(property="email", type="string")
-     *             )
+     *         @OA\JsonContent(
+     *             @OA\Property(property="email", type="string")
      *         )
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Se envió el correo correctamente"
+     *         description="Retorna el usuario y el token"
      *     ),
      *     @OA\Response(
-     *         response=401,
-     *         description="Datos inválidos"
+     *         response=404,
+     *         description="El usuario no existe"
+     *     ),
+     *     @OA\Response(
+     *         response=418,
+     *         description="Error general"
      *     )
      * )
      */
 
-    public function recoveryPassword(Request $request)
+    public function sendEmailToRestorePassword(Request $request)
     {
         try {
             $request->validate([
@@ -323,6 +324,42 @@ class UserController extends Controller
         }
     }
 
+     /**
+     * Este endpoint valida un token de recuperación y devuelve una respuesta basada en la validez del token.
+     * @OA\Get(
+     *     path="/api/validateRecoveryToken/{token}",
+     *     tags={"Users"},
+     *     summary="Validar token de recuperación",
+     *     description="Valida un token de recuperación de contraseña",
+     *     operationId="validateRecoveryToken",
+     *     @OA\Parameter(
+     *         name="token",
+     *         in="path",
+     *         description="Token de recuperación",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Token válido"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Token inválido"
+     *     ),
+     *     @OA\Response(
+     *         response=418,
+     *         description="Error general"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error en la base de datos"
+     *     )
+     * )
+     */
+
     public function validateRecoveryToken(string $token) {
         try {
             $user = User::where('recuperar_token', $token)->first();
@@ -344,13 +381,54 @@ class UserController extends Controller
         }
     }
 
+     /**
+     * Almacena la contraseña siempre
+     *
+     * @OA\post(
+     *     path="/api/restorePassword/{token}",
+     *     tags={"Users"},
+     *     summary="Actualiza la contraseña del usuario siempre y cuando exista el token generado",
+     *     @OA\Parameter(
+     *         name="token",
+     *         in="path",
+     *         description="Token de recuperación",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),     
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="password", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Retorna el usuario y el token"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Token inválido"
+     *     ),
+     *     @OA\Response(
+     *         response=418,
+     *         description="Error general"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error en la base de datos"
+     *     )
+     * )
+     */
     public function restorePassword (Request $request, string $token) {
         try {
             $password = $request -> password;
             $user = User::where('recuperar_token', $token)->first();
             
             if($user) {
-                $user->update(['password' => $password]);
+                $user->update(['password' => bcrypt($password)]);
+                $user->update(['recuperar_token' => ""]);
                 return response()->json(['message' => 'Contraseña almacenada correctamente'], 201);
             }
             return response()->json(['message' => 'Token inválido'], 404);

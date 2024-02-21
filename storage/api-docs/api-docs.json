@@ -166,14 +166,14 @@
                 ]
             }
         },
-        "/api/recoveryPassword": {
+        "/api/sendEmailToRestorePassword": {
             "post": {
                 "tags": [
                     "Users"
                 ],
-                "summary": "Se envía correo con instrucciones",
-                "description": "Se envía correo para recuperar contraseña",
-                "operationId": "e7ee48acdb38c184698309506401a516",
+                "summary": "Se genera un token de un uso para cambiar la contraseña del usuario",
+                "description": "Envía un correo electrónico para cambiar la contraseña",
+                "operationId": "9ee895510ca03d8e9442f74ce314be81",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -191,10 +191,98 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Se envió el correo correctamente"
+                        "description": "Retorna el usuario y el token"
                     },
-                    "401": {
-                        "description": "Datos inválidos"
+                    "404": {
+                        "description": "El usuario no existe"
+                    },
+                    "418": {
+                        "description": "Error general"
+                    }
+                }
+            }
+        },
+        "/api/validateRecoveryToken/{token}": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Validar token de recuperación",
+                "description": "Valida un token de recuperación de contraseña",
+                "operationId": "validateRecoveryToken",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "path",
+                        "description": "Token de recuperación",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Token válido"
+                    },
+                    "404": {
+                        "description": "Token inválido"
+                    },
+                    "418": {
+                        "description": "Error general"
+                    },
+                    "500": {
+                        "description": "Error en la base de datos"
+                    }
+                }
+            }
+        },
+        "/api/restorePassword/{token}": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Actualiza la contraseña del usuario siempre y cuando exista el token generado",
+                "description": "Almacena la contraseña siempre",
+                "operationId": "6930652554bfedc3888ff42fd1593896",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "path",
+                        "description": "Token de recuperación",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Retorna el usuario y el token"
+                    },
+                    "404": {
+                        "description": "Token inválido"
+                    },
+                    "418": {
+                        "description": "Error general"
+                    },
+                    "500": {
+                        "description": "Error en la base de datos"
                     }
                 }
             }
