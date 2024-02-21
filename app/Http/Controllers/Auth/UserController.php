@@ -147,7 +147,7 @@ class UserController extends Controller
 
             return response()->json(['message' => 'Credenciales inválidas'], 401);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json(['message' => $e->getMessage()], 422);
+            return response()->json(['message' => $e->getMessage()], 404);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error general', 'detail' => $e->getMessage()], 500);
         }
