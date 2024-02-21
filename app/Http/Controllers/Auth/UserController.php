@@ -260,6 +260,7 @@ class UserController extends Controller
     public function checkStatus(Request $request)
     {
         $user = $request->user();
+        $user->rol;
         if($user){
             return response()->json(['token'=>str_replace('Bearer ', '', $request->header('authorization')), 'user'=>$user],200);
         }
