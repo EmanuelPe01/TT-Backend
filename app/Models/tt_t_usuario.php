@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\tt_t_rol as Rol;
+use App\Models\tt_t_Inscripcion as Inscripcion;
 
 class tt_t_usuario extends Authenticatable
 {
@@ -21,6 +22,7 @@ class tt_t_usuario extends Authenticatable
         'email',
         'password',
         'id_rol',
+        'fecha_nacimiento',
         'recuperar_token'
     ];
 
@@ -40,5 +42,9 @@ class tt_t_usuario extends Authenticatable
     public function rol()
     {
         return $this->belongsTo(Rol::class, 'id_rol');
+    }
+
+    public function inscripcion() {
+        return $this->hasOne(Inscripcion::class, 'id_user_cliente');
     }
 }

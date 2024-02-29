@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Validator;
+use \App\Models\tt_t_usuario as Usuario;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +25,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Validator::extend('es_cliente', function ($attribute, $value, $parameters, $validator) {
+            return Usuario::where('id', $value)->where('id_rol', 1)->exists();
+        });
+
+        Validator::extend('es_entrenador', function ($attribute, $value, $parameters, $validator) {
+            return Usuario::where('id', $value)->where('id_rol', 2)->exists();
+        });
     }
 }

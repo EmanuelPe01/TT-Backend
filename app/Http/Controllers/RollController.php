@@ -17,7 +17,7 @@ class RollController extends Controller
          *     @OA\RequestBody(
          *         required=true,
          *         @OA\JsonContent(
-         *             @OA\Property(property="rol_name", type="string"), 
+         *             @OA\Property(property="rol_name", type="string"),
          *         )
          *     ),
          *     @OA\Response(
@@ -37,7 +37,7 @@ class RollController extends Controller
 
     public function store(Request $request)
     {
-        try 
+        try
         {
             $request->validate([
                 'rol_name' => 'required|unique:TT_T_Rol,rol_name'
@@ -48,7 +48,7 @@ class RollController extends Controller
             ]);
     
             return response()->json([
-                'message' => 'Rol creado con éxito', 
+                'message' => 'Rol creado con éxito',
                 'role' => $role
             ], 201);
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -84,19 +84,10 @@ class RollController extends Controller
     */
     public function getAllRoles()
     {
-        $roles = Rol::all();
+        $roles = Rol::with('usuarios')->get();
         return response()->json([
             'roles' => $roles
         ], 200);
     }
 
-    public function update(Request $request, Rol $rol)
-    {
-        //
-    }
-
-    public function destroy(Rol $rol)
-    {
-        //
-    }
 }

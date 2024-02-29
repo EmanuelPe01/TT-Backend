@@ -23,7 +23,7 @@ class UserController extends Controller
 {
      /**
      * Se crea un usuario
-     *
+     * El formato de la fecha es YYYY-MM-DD
      * @OA\Post(
      *     path="/api/createUser",
      *     tags={"Users"},
@@ -37,6 +37,7 @@ class UserController extends Controller
      *             @OA\Property(property="secondSurname", type="string"),
      *             @OA\Property(property="telephone", type="string"),
      *             @OA\Property(property="email", type="string"),
+     *             @OA\Property(property="fecha_nacimiento", type="string"),
      *             @OA\Property(property="password", type="string"),
      *         )
      *     ),
@@ -61,7 +62,8 @@ class UserController extends Controller
                 'secondSurname' => 'required',
                 'telephone' => 'unique:TT_T_Usuario',
                 'email' => 'required|email|unique:TT_T_Usuario',
-                'password' => 'required'
+                'password' => 'required',
+                'fecha_nacimiento' => 'required|date_format:Y-m-d'
             ]);
         
             $user = User::create([
@@ -71,7 +73,8 @@ class UserController extends Controller
                 'secondSurname' => $request->secondSurname,
                 'telephone' => $request->telephone,
                 'email' => $request->email,
-                'password' => bcrypt($request->password)
+                'fecha_nacimiento' => $request->fecha_nacimiento,
+                'password' => bcrypt($request->password),
             ]);
 
             $user->rol;
@@ -443,6 +446,56 @@ class UserController extends Controller
                 'message' => 'Error general',
                 'error' => $e->getMessage()
             ], 418);
+        }
+    }
+
+    /**
+     * Se verifica si el usuario tiene inscripción
+     *
+     * @OA\Get(
+     *     path="/api/getDetailInscription",
+     *     tags={"Users"},
+     *     summary="Verificacion de inscripción",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Retorna el detalle de la inscripción"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No encontrado"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error general"
+     *     )
+     * )
+     */
+    public function getDetailInscription (Request $request) {
+        try{
+            $inscripcion = $request->user()->inscripcion;
+            $rol_id = $request->user()->rol;
+            if($inscripcion) {
+                return response()->json([
+                    'detalle' => $inscripcion,
+                    'rol' => $rol_id
+
+                ], 200);
+            } else if ($rol_id->id > 1) {
+                return response()->json([
+                    'detalle' => 'No es cliente',
+                    'rol' => $rol_id
+                ], 200);
+            } 
+
+            return response()->json([
+                'message' => 'No cuenta con inscrpcion'
+            ], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error en el servidor',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 }

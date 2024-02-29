@@ -12,7 +12,7 @@
                     "Users"
                 ],
                 "summary": "Creación de un usuario",
-                "description": "Se crea un usuario",
+                "description": "Se crea un usuario\nEl formato de la fecha es YYYY-MM-DD",
                 "operationId": "2ecb32257bbde019abcc0fcfe680a018",
                 "requestBody": {
                     "required": true,
@@ -36,6 +36,9 @@
                                         "type": "string"
                                     },
                                     "email": {
+                                        "type": "string"
+                                    },
+                                    "fecha_nacimiento": {
                                         "type": "string"
                                     },
                                     "password": {
@@ -283,6 +286,98 @@
                     },
                     "500": {
                         "description": "Error en la base de datos"
+                    }
+                }
+            }
+        },
+        "/api/getDetailInscription": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Verificacion de inscripción",
+                "description": "Se verifica si el usuario tiene inscripción",
+                "operationId": "18a3a7165dccd2a797de306330acabe8",
+                "responses": {
+                    "200": {
+                        "description": "Retorna el detalle de la inscripción"
+                    },
+                    "404": {
+                        "description": "No encontrado"
+                    },
+                    "500": {
+                        "description": "Error general"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/generateInscription": {
+            "post": {
+                "tags": [
+                    "Inscripciones"
+                ],
+                "summary": "Genera una inscripción",
+                "description": "Se almacena un rol para usuario",
+                "operationId": "74ea998965dbec3c7a268bcba9b13e4d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id_user_cliente": {
+                                        "type": "integer"
+                                    },
+                                    "id_user_entrenador": {
+                                        "type": "integer"
+                                    },
+                                    "fecha_inicio": {
+                                        "type": "string"
+                                    },
+                                    "peso_maximo": {
+                                        "type": "string"
+                                    },
+                                    "estado": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Se almacena un role."
+                    },
+                    "400": {
+                        "description": "Duplicidad de valores."
+                    },
+                    "500": {
+                        "description": "Error en la base de datos"
+                    }
+                }
+            }
+        },
+        "/api/allInscriptions": {
+            "get": {
+                "tags": [
+                    "Inscripciones"
+                ],
+                "summary": "Se obtienen todos las inscripciones",
+                "description": "Se obtienen todos las inscripciones",
+                "operationId": "5706088bba0eccc995cae3c7e87cc57b",
+                "responses": {
+                    "200": {
+                        "description": "Retorna la informacion de todas las inscripciones"
+                    },
+                    "default": {
+                        "description": "Error"
                     }
                 }
             }
