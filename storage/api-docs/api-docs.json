@@ -435,6 +435,38 @@
                     }
                 }
             }
+        },
+        "/api/usersByRole/{rol_id}": {
+            "get": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Retorna todos los usuarios según el rol",
+                "description": "Almacena la contraseña siempre",
+                "operationId": "7c1f49bc745da6c52e2215b8ba8ad6c6",
+                "parameters": [
+                    {
+                        "name": "rol_id",
+                        "in": "path",
+                        "description": "Id del rol",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna todos los usuarios correspondientes al rol"
+                    },
+                    "404": {
+                        "description": "Token inválido"
+                    },
+                    "500": {
+                        "description": "Error el servidor"
+                    }
+                }
+            }
         }
     },
     "components": {

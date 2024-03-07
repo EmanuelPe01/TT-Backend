@@ -21,6 +21,6 @@ class tt_t_rol extends Model
     ];
 
     public function usuarios() {
-        return $this->hasMany(Users::class, 'id');
+        return $this->hasMany(Users::class, 'id_rol');
     }
 }

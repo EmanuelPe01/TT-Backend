@@ -481,12 +481,12 @@ class UserController extends Controller
                     'rol' => $rol_id
 
                 ], 200);
-            } else if ($rol_id->id > 1) {
+            } elseif ($rol_id->id > 1) {
                 return response()->json([
                     'detalle' => 'No es cliente',
                     'rol' => $rol_id
                 ], 200);
-            } 
+            }
 
             return response()->json([
                 'message' => 'No cuenta con inscrpcion'

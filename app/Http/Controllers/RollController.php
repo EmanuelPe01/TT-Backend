@@ -90,4 +90,51 @@ class RollController extends Controller
         ], 200);
     }
 
+    /**
+     * Almacena la contraseña siempre
+     *
+     * @OA\get(
+     *     path="/api/usersByRole/{rol_id}",
+     *     tags={"Roles"},
+     *     summary="Retorna todos los usuarios según el rol",
+     *     @OA\Parameter(
+     *         name="rol_id",
+     *         in="path",
+     *         description="Id del rol",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Retorna todos los usuarios correspondientes al rol"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Token inválido"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error el servidor"
+     *     )
+     * )
+     */
+    public function getUsersByRole(Request $request, int $rol_id) {
+        try {
+            $rol = Rol::find($request->rol_id);
+
+            if (!$rol) {
+                return response()->json(['message' => 'El rol no existe'], 404);
+            }
+
+            $usuarios = $rol->usuarios()->select('id', 'name', 'firstSurname', 'secondSurname')->get();
+            return response()->json(['usuarios' => $usuarios], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error en el servidor',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

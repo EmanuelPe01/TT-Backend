@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 //RollController
 Route::post('/createRole', [RollController::class, 'store']);
 Route::get('/allRoles', [RollController::class, 'getAllRoles']);
+Route::get('/usersByRole/{rol_id}', [RollController::class, 'getUsersByRole']);
 
 //UserController
 Route::post('/createUser', [UserController::class, 'store']);
