@@ -127,8 +127,14 @@ class RollController extends Controller
             if (!$rol) {
                 return response()->json(['message' => 'El rol no existe'], 404);
             }
-
-            $usuarios = $rol->usuarios()->select('id', 'name', 'firstSurname', 'secondSurname')->get();
+            $usuarios = $rol->usuarios()
+            ->select('id', 'name', 'firstSurname', 'secondSurname')
+            ->whereNotExists(function ($query) {
+                $query->select('id')
+                    ->from('tt_t_inscripcion')
+                    ->whereColumn('tt_t_inscripcion.id_user_cliente', 'tt_t_usuario.id');
+            })->get();
+            
             return response()->json(['usuarios' => $usuarios], 200);
         } catch (\Exception $e) {
             return response()->json([
