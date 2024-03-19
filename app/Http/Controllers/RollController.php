@@ -135,7 +135,7 @@ class RollController extends Controller
                     ->whereColumn('tt_t_inscripcion.id_user_cliente', 'tt_t_usuario.id');
             })->get();
             
-            return response()->json(['usuarios' => $usuarios], 200);
+            return response()->json($usuarios, 200);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Error en el servidor',
