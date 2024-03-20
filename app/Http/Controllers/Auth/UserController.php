@@ -236,11 +236,6 @@ class UserController extends Controller
 
         return response()->json(['message' => 'No se pudo encontrar el usuario autenticado'], 500);
     }
-
-    public function destroy($id)
-    {
-        //
-    }
     
     /**
      * Se verifica si el token esta autorizado o no
@@ -265,7 +260,10 @@ class UserController extends Controller
         $user = $request->user();
         $user->rol;
         if($user){
-            return response()->json(['token'=>str_replace('Bearer ', '', $request->header('authorization')), 'user'=>$user],200);
+            return response()->json([
+                'token'=>str_replace('Bearer ', '', $request->header('authorization')), 
+                'user'=>$user],
+            200);
         }
     }
 
@@ -312,7 +310,7 @@ class UserController extends Controller
                 $user->update(['recuperar_token' => $token]);
                 Mail::to($user->email)->send(new RecoveryPasswordMail($user));
                 return response()->json([
-                    'message' => 'Se ha enviado un correo electrónico con las instrucciones para recuperar tu contraseña.',
+                    'message' => 'Se ha enviado un correo electrónico con instrucciones para recuperar tu contraseña.',
                     'token' => $token
                 ], 200);
             }

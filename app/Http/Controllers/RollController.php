@@ -120,9 +120,9 @@ class RollController extends Controller
      *     )
      * )
      */
-    public function getUsersByRole(Request $request, int $rol_id) {
+    public function getUsersByRole(int $rol_id) {
         try {
-            $rol = Rol::find($request->rol_id);
+            $rol = Rol::find($rol_id);
 
             if (!$rol) {
                 return response()->json(['message' => 'El rol no existe'], 404);

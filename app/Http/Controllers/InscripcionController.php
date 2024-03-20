@@ -9,7 +9,7 @@ use Carbon\Carbon;
 class InscripcionController extends Controller
 {
     /**
-         * Se almacena un rol para usuario
+         * Se almacena una inscripcion para usuario
          *
          * @OA\Post(
          *     path="/api/generateInscription",
@@ -102,8 +102,114 @@ class InscripcionController extends Controller
             return $inscripcion;
         });
 
-        return response()->json([
-            'inscripciones' => $inscripciones
-        ], 200);
+        return response()->json($inscripciones, 200);
+    }
+
+    /**
+     * Almacena la contraseña siempre
+     *
+     * @OA\get(
+     *     path="/api/getInscriptionById/{id_inscripcion}",
+     *     tags={"Inscripciones"},
+     *     summary="Retorna los detalles de una inscripción",
+     *     @OA\Parameter(
+     *         name="id_inscripcion",
+     *         in="path",
+     *         description="Id de la inscripción",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error el servidor"
+     *     )
+     * )
+     */
+
+    public function getInscriptionById(int $id_inscripcion) {
+        try {
+            $inscripcion = Inscripcion::with(['cliente' => function ($query) {
+                $query->select('id', 'name', 'firstSurname', 'secondSurname');
+            }, 'entrenador' => function ($query) {
+                $query->select('id', 'name', 'firstSurname', 'secondSurname');
+            }])->find($id_inscripcion);
+            return response()->json($inscripcion, 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error general',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+         * Se almacena una inscripcion para usuario
+         *
+         * @OA\Put(
+         *     path="/api/updateInscription/{id_inscripcion}",
+         *     tags={"Inscripciones"},
+         *     summary="Genera una inscripción",
+         *  *     @OA\Parameter(
+         *         name="id_inscripcion",
+         *         in="path",
+         *         description="Id de la inscripción",
+         *         required=true,
+         *         @OA\Schema(
+         *             type="string"
+         *         )
+         *     ),
+         *     @OA\RequestBody(
+         *         required=true,
+         *         @OA\JsonContent(
+         *             @OA\Property(property="id_user_entrenador", type="integer"),
+         *             @OA\Property(property="fecha_inicio", type="string"),
+         *             @OA\Property(property="peso_maximo", type="string"),
+         *             @OA\Property(property="estado", type="boolean"),
+         *         )
+         *     ),
+         *     @OA\Response(
+         *         response=200,
+         *         description="Se almacena un role."
+         *     ),
+         *      @OA\Response(
+         *         response=400,
+         *         description="Duplicidad de valores."
+         *     ),
+         *      @OA\Response(
+         *         response=500,
+         *         description="Error en la base de datos"
+         *     )
+         * )
+    */
+    public function updateInscription(Request $request, int $id_inscripcion){
+        try {
+            $inscripcion = Inscripcion::find($id_inscripcion);
+            if($inscripcion){
+                $request -> validate([
+                    'id_user_entrenador' => 'required|exists:tt_t_usuario,id|es_entrenador',
+                    'fecha_inicio' => 'required|date_format:Y-m-d',
+                    'peso_maximo' => 'required|regex:/^\d+(\.\d{1,2})?$/|gt:0',
+                    'estado' => 'required'
+                ]);
+    
+                $inscripcion->id_user_entrenador = $request->id_user_entrenador;
+                $inscripcion->fecha_inicio = $request->fecha_inicio;
+                $inscripcion->peso_maximo = $request->peso_maximo;
+                $inscripcion->estado = $request->estado;
+    
+                $inscripcion->save();
+                return response()->json(['message' => 'Actualización exitosa'], 201);
+            } else {
+                return response()->json(['message' => $e->getMessage()], 404);
+            }
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error general',
+                'error' => $e
+            ], 500);
+        }
     }
 }
