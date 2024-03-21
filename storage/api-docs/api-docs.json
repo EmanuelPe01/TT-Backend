@@ -388,7 +388,7 @@
                     "Inscripciones"
                 ],
                 "summary": "Retorna los detalles de una inscripción",
-                "description": "Almacena la contraseña siempre",
+                "description": "Obtiene una inscripción",
                 "operationId": "df766e5c70850b1a86401d15a98e8dac",
                 "parameters": [
                     {
@@ -413,8 +413,8 @@
                 "tags": [
                     "Inscripciones"
                 ],
-                "summary": "Genera una inscripción",
-                "description": "Se almacena una inscripcion para usuario",
+                "summary": "Actualiza una inscripción",
+                "description": "Se actualiza la inscripcion de un usuario",
                 "operationId": "a26f230d9e1bfdac9bb8e6e672582d52",
                 "parameters": [
                     {
@@ -460,6 +460,32 @@
                     },
                     "500": {
                         "description": "Error en la base de datos"
+                    }
+                }
+            }
+        },
+        "/api/deleteInscription/{id_inscripcion}": {
+            "get": {
+                "tags": [
+                    "Inscripciones"
+                ],
+                "summary": "Elimina una inscripción",
+                "description": "Elimina una inscripción",
+                "operationId": "21813fc1faa2896c797dad99fd716078",
+                "parameters": [
+                    {
+                        "name": "id_inscripcion",
+                        "in": "path",
+                        "description": "Id de la inscripción",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "Error el servidor"
                     }
                 }
             }

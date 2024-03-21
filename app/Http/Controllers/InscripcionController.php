@@ -106,7 +106,7 @@ class InscripcionController extends Controller
     }
 
     /**
-     * Almacena la contraseña siempre
+     * Obtiene una inscripción
      *
      * @OA\get(
      *     path="/api/getInscriptionById/{id_inscripcion}",
@@ -145,12 +145,12 @@ class InscripcionController extends Controller
     }
 
     /**
-         * Se almacena una inscripcion para usuario
+         * Se actualiza la inscripcion de un usuario
          *
          * @OA\Put(
          *     path="/api/updateInscription/{id_inscripcion}",
          *     tags={"Inscripciones"},
-         *     summary="Genera una inscripción",
+         *     summary="Actualiza una inscripción",
          *  *     @OA\Parameter(
          *         name="id_inscripcion",
          *         in="path",
@@ -208,7 +208,51 @@ class InscripcionController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Error general',
-                'error' => $e
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    /**
+     * Elimina una inscripción
+     *
+     * @OA\get(
+     *     path="/api/deleteInscription/{id_inscripcion}",
+     *     tags={"Inscripciones"},
+     *     summary="Elimina una inscripción",
+     *     @OA\Parameter(
+     *         name="id_inscripcion",
+     *         in="path",
+     *         description="Id de la inscripción",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error el servidor"
+     *     )
+     * )
+     */
+    public function deleteInscription(int $id_inscripcion) {
+        try {
+            $inscripcion = Inscripcion::find($id_inscripcion);
+
+            if(!$inscripcion){
+                return response()->json(['message' => $e->getMessage()], 404);
+            }
+
+            $inscripcion->delete();
+            
+            return response()->json([
+                'message' => 'Registro eliminado'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error general',
+                'error' => $e->getMessage()
             ], 500);
         }
     }

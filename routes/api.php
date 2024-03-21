@@ -19,10 +19,11 @@ Route::get('/validateRecoveryToken/{token}', [UserController::class, 'validateRe
 Route::post('/restorePassword/{token}', [UserController::class, 'restorePassword']);
 
 //InscripcionController
-Route::post('/generateInscription', [InscripcionController::class, 'store']);
 Route::get('/allInscriptions', [InscripcionController::class, 'getAllInscriptions']);
 Route::get('/getInscriptionById/{id_inscripcion}', [InscripcionController::class, 'getInscriptionById']);
+Route::post('/generateInscription', [InscripcionController::class, 'store']);
 Route::put('/updateInscription/{id_inscripcion}', [InscripcionController::class, 'updateInscription']);
+Route::delete('/deleteInscription/{id_inscripcion}', [InscripcionController::class, 'deleteInscription']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/check-status',[UserController::class,'checkStatus']);
