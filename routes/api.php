@@ -3,7 +3,9 @@
 use App\Http\Controllers\Auth\UserController;
 use App\Http\Controllers\RollController;
 use App\Http\Controllers\InscripcionController;
+use App\Http\Controllers\EjercicioController;
 use Illuminate\Support\Facades\Route;
+
 
 //RollController
 Route::post('/createRole', [RollController::class, 'store']);
@@ -24,6 +26,10 @@ Route::get('/getInscriptionById/{id_inscripcion}', [InscripcionController::class
 Route::post('/generateInscription', [InscripcionController::class, 'store']);
 Route::put('/updateInscription/{id_inscripcion}', [InscripcionController::class, 'updateInscription']);
 Route::delete('/deleteInscription/{id_inscripcion}', [InscripcionController::class, 'deleteInscription']);
+
+//Ejercicios
+Route::post('/createTipoEjercicio', [EjercicioController::class, 'store']);
+Route::get('/getAllTipoEjercicio', [EjercicioController::class, 'getAllTipoEjercicio']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/check-status',[UserController::class,'checkStatus']);

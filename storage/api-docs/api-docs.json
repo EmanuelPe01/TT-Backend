@@ -316,6 +316,60 @@
                 ]
             }
         },
+        "/api/createTipoEjercicio": {
+            "post": {
+                "tags": [
+                    "Ejercicios"
+                ],
+                "summary": "Creación de un tipo de ejercicio",
+                "description": "Se crea un tipo de ejercicio",
+                "operationId": "3f3afc1535eb976d5137bb940e5fdebc",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "nombre_tipo": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Se almacena un tipo de ejercicio"
+                    },
+                    "400": {
+                        "description": "Duplicidad de valores."
+                    },
+                    "500": {
+                        "description": "Error en la base de datos"
+                    }
+                }
+            }
+        },
+        "/api/getAllTipoEjercicio": {
+            "get": {
+                "tags": [
+                    "Ejercicios"
+                ],
+                "summary": "Consulta los tipos de ejercicio",
+                "description": "Se crea un tipo de ejercicio",
+                "operationId": "5bff5a72cd9d0e130ffdf4cc614175bf",
+                "responses": {
+                    "200": {
+                        "description": "Retorna una lista con los tipos de ejercicios"
+                    },
+                    "500": {
+                        "description": "Error en la base de datos"
+                    }
+                }
+            }
+        },
         "/api/generateInscription": {
             "post": {
                 "tags": [
