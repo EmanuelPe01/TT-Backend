@@ -28,8 +28,10 @@ Route::put('/updateInscription/{id_inscripcion}', [InscripcionController::class,
 Route::delete('/deleteInscription/{id_inscripcion}', [InscripcionController::class, 'deleteInscription']);
 
 //Ejercicios
-Route::post('/createTipoEjercicio', [EjercicioController::class, 'store']);
+Route::post('/createTipoEjercicio', [EjercicioController::class, 'storeTipoEjercicio']);
 Route::get('/getAllTipoEjercicio', [EjercicioController::class, 'getAllTipoEjercicio']);
+Route::put('/updateTypeTrining/{id_tipoEjercicio}', [EjercicioController::class, 'updateTipoEjercicio']);
+Route::delete('/deleteTypeTrining/{id_tipoEjercicio}', [EjercicioController::class, 'deleteTipoEjericio']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/check-status',[UserController::class,'checkStatus']);

@@ -323,7 +323,7 @@
                 ],
                 "summary": "Creación de un tipo de ejercicio",
                 "description": "Se crea un tipo de ejercicio",
-                "operationId": "3f3afc1535eb976d5137bb940e5fdebc",
+                "operationId": "0e9c1b7baed24530ef582350c2d4e6fb",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -366,6 +366,82 @@
                     },
                     "500": {
                         "description": "Error en la base de datos"
+                    }
+                }
+            }
+        },
+        "/api/updateTypeTrining/{id_tipoEjercicio}": {
+            "put": {
+                "tags": [
+                    "Ejercicios"
+                ],
+                "summary": "Actualiza una inscripción",
+                "description": "Se actualiza un tipo de ejercicio",
+                "operationId": "6a5e16506ccd937167e8b4036f324ca1",
+                "parameters": [
+                    {
+                        "name": "id_tipoEjercicio",
+                        "in": "path",
+                        "description": "Id del tipo de ejercicio",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "nombre_tipo": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Se almacena un tipo de ejercicio"
+                    },
+                    "400": {
+                        "description": "Duplicidad de valores."
+                    },
+                    "500": {
+                        "description": "Error en la base de datos"
+                    }
+                }
+            }
+        },
+        "/api/deleteTypeTrining/{id_tipoEjercicio}": {
+            "delete": {
+                "tags": [
+                    "Ejercicios"
+                ],
+                "summary": "Elimina un tipo de ejercicio",
+                "description": "Elimina un tipo de ejercicio",
+                "operationId": "8a8d3424d141027245bcc32aae2f78ae",
+                "parameters": [
+                    {
+                        "name": "id_tipoEjercicio",
+                        "in": "path",
+                        "description": "Id del tipo de ejercicio",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "404": {
+                        "description": "Registro no encontrado"
+                    },
+                    "500": {
+                        "description": "Error el servidor"
                     }
                 }
             }
@@ -519,13 +595,13 @@
             }
         },
         "/api/deleteInscription/{id_inscripcion}": {
-            "get": {
+            "delete": {
                 "tags": [
                     "Inscripciones"
                 ],
                 "summary": "Elimina una inscripción",
                 "description": "Elimina una inscripción",
-                "operationId": "21813fc1faa2896c797dad99fd716078",
+                "operationId": "4d11f8c7a46699b009b072a4d77b3e25",
                 "parameters": [
                     {
                         "name": "id_inscripcion",

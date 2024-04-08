@@ -217,7 +217,7 @@ class InscripcionController extends Controller
     /**
      * Elimina una inscripción
      *
-     * @OA\get(
+     * @OA\delete(
      *     path="/api/deleteInscription/{id_inscripcion}",
      *     tags={"Inscripciones"},
      *     summary="Elimina una inscripción",
