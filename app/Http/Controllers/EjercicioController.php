@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\tt_t_TipoEjercicio as tipoEjercicio;
+use App\Models\tt_t_DetalleEjercicio as detalleEjercicio;
 
 class EjercicioController extends Controller
 {
@@ -60,7 +61,7 @@ class EjercicioController extends Controller
     }
 
     /**
-         * Se crea un tipo de ejercicio
+         * Consulta todos los tipos de ejercicios
          *
          * @OA\Get(
          *     path="/api/getAllTipoEjercicio",
@@ -193,6 +194,103 @@ class EjercicioController extends Controller
                 'message' => 'Error general',
                 'error' => $e->getMessage()
             ], 500);
+        }
+    }
+
+    /**
+         * Se crea un ejercicio
+         * 
+         * La demo del ejercicio debe ser un vídeo de Youtube, se valida antes de hacer el registro
+         * @OA\Post(
+         *     path="/api/createEjercicio",
+         *     tags={"Ejercicios"},
+         *     summary="Creación de un ejercicio",
+         *     @OA\RequestBody(
+         *         required=true,
+         *         @OA\JsonContent(
+         *             @OA\Property(property="id_tipo_ejercicio", type="integer"),
+         *             @OA\Property(property="nombre_ejercicio", type="string"),
+         *             @OA\Property(property="unidad_medida", type="string"),
+         *             @OA\Property(property="demo_ejercicio", type="string"),
+         *         )
+         *     ),
+         *     @OA\Response(
+         *         response=200,
+         *         description="Se almacena un tipo de ejercicio"
+         *     ),
+         *      @OA\Response(
+         *         response=404,
+         *         description="Error de validación."
+         *     ),
+         *      @OA\Response(
+         *         response=500,
+         *         description="Error en el servidor"
+         *     )
+         * )
+    */
+    public function storeEjercicio(Request $request){
+        $pattern = '/^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{11})(?:\?[^\s]*)?$/';
+        try {
+            $request -> validate([
+                'id_tipo_ejercicio' => 'required|exists:tt_t_tipoejercicio,id',
+                'nombre_ejercicio' => 'required|unique:tt_t_detalleEjercicio,nombre_ejercicio',
+                'unidad_medida' => 'required',
+                'demo_ejercicio' => 'required|youtube_url'
+            ]);
+
+            if (preg_match($pattern, $request->demo_ejercicio, $matches)){
+                $videoId = $matches[4];
+                $ejercicio = detalleEjercicio::create([
+                    'id_tipo_ejercicio' => $request->id_tipo_ejercicio,
+                    'nombre_ejercicio' => $request->nombre_ejercicio,
+                    'unidad_medida' => $request->unidad_medida,
+                    'demo_ejercicio' => 'https://www.youtube.com/embed/'.$videoId
+                ]);
+    
+                return response()->json([
+                    'message' => 'Ejercicio almacenado correctamente',
+                    'detail' => $ejercicio
+                ], 201);
+            }              
+
+            return response()->json([
+                'message' => 'No se pudo procesar al solicitud',
+            ], 500);
+        
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error general',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    /**
+         * Se consultan todos los ejercicios
+         *
+         * @OA\Get(
+         *     path="/api/getAllEjercicios",
+         *     tags={"Ejercicios"},
+         *     summary="Consulta los ejercicios",
+         *     @OA\Response(
+         *         response=200,
+         *         description="Retorna una lista con los ejercicios"
+         *     ),
+         *      @OA\Response(
+         *         response=500,
+         *         description="Error en la base de datos"
+         *     )
+         * )
+    */
+    public function getAllEjercicios() {
+        try{
+            $ejercicios = detalleEjercicio::All();
+
+            return response()->json($ejercicios, 200);
+        } catch (\Exception $e) {
+            return response()->json($e, 500);
         }
     }
 }

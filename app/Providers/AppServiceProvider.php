@@ -32,5 +32,10 @@ class AppServiceProvider extends ServiceProvider
         Validator::extend('es_entrenador', function ($attribute, $value, $parameters, $validator) {
             return Usuario::where('id', $value)->where('id_rol', 2)->exists();
         });
+
+        Validator::extend('youtube_url', function($attribute, $value, $parameters, $validator) {
+            $pattern = '/^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[\w-]{11}(?:\?[^\s]*)?$/';
+            return preg_match($pattern, $value);
+        });
     }
 }

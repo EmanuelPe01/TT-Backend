@@ -358,7 +358,7 @@
                     "Ejercicios"
                 ],
                 "summary": "Consulta los tipos de ejercicio",
-                "description": "Se crea un tipo de ejercicio",
+                "description": "Consulta todos los tipos de ejercicios",
                 "operationId": "5bff5a72cd9d0e130ffdf4cc614175bf",
                 "responses": {
                     "200": {
@@ -442,6 +442,69 @@
                     },
                     "500": {
                         "description": "Error el servidor"
+                    }
+                }
+            }
+        },
+        "/api/createEjercicio": {
+            "post": {
+                "tags": [
+                    "Ejercicios"
+                ],
+                "summary": "Creación de un ejercicio",
+                "description": "Se crea un ejercicio\n\nLa demo del ejercicio debe ser un vídeo de Youtube, se valida antes de hacer el registro",
+                "operationId": "b717769d14f995363612eb1a3d92806d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id_tipo_ejercicio": {
+                                        "type": "integer"
+                                    },
+                                    "nombre_ejercicio": {
+                                        "type": "string"
+                                    },
+                                    "unidad_medida": {
+                                        "type": "string"
+                                    },
+                                    "demo_ejercicio": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Se almacena un tipo de ejercicio"
+                    },
+                    "404": {
+                        "description": "Error de validación."
+                    },
+                    "500": {
+                        "description": "Error en el servidor"
+                    }
+                }
+            }
+        },
+        "/api/getAllEjercicios": {
+            "get": {
+                "tags": [
+                    "Ejercicios"
+                ],
+                "summary": "Consulta los ejercicios",
+                "description": "Se consultan todos los ejercicios",
+                "operationId": "2cd73f1f1559c968ce6c0031e1b04e19",
+                "responses": {
+                    "200": {
+                        "description": "Retorna una lista con los ejercicios"
+                    },
+                    "500": {
+                        "description": "Error en la base de datos"
                     }
                 }
             }
