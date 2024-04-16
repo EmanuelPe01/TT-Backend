@@ -20,6 +20,8 @@ Route::post('/sendEmailToRestorePassword', [UserController::class, 'sendEmailToR
 Route::get('/validateRecoveryToken/{token}', [UserController::class, 'validateRecoveryToken']);
 Route::post('/restorePassword/{token}', [UserController::class, 'restorePassword']);
 
+// A partir de aquí, agregar al middleware
+
 //InscripcionController
 Route::get('/allInscriptions', [InscripcionController::class, 'getAllInscriptions']);
 Route::get('/getInscriptionById/{id_inscripcion}', [InscripcionController::class, 'getInscriptionById']);

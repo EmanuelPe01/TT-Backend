@@ -286,7 +286,7 @@ class EjercicioController extends Controller
     */
     public function getAllEjercicios() {
         try{
-            $ejercicios = detalleEjercicio::All();
+            $ejercicios = detalleEjercicio::with('tipoEjercicio')->get();
 
             return response()->json($ejercicios, 200);
         } catch (\Exception $e) {

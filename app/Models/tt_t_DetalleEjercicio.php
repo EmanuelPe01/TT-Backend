@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\tt_t_tipoEjercicio as tipoEjercicio;
 
 class tt_t_DetalleEjercicio extends Model
 {
@@ -21,4 +22,9 @@ class tt_t_DetalleEjercicio extends Model
         'created_at',
         'updated_at'
     ];
+
+    public function tipoEjercicio()
+    {
+        return $this->belongsTo(tipoEjercicio::class, 'id_tipo_ejercicio');
+    }
 }
