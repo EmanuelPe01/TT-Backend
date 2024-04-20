@@ -293,4 +293,88 @@ class EjercicioController extends Controller
             return response()->json($e, 500);
         }
     }
+
+     /**
+         * Se actualiza la información de un ejercicio
+         *
+         * @OA\Put(
+         *     path="/api/updateEjercicio/{id_ejercicio}",
+         *     tags={"Ejercicios"},
+         *     summary="Actualiza un ejercicio",
+         *  *     @OA\Parameter(
+         *         name="id_ejercicio",
+         *         in="path",
+         *         description="Id del ejercicio",
+         *         required=true,
+         *         @OA\Schema(
+         *             type="string"
+         *         )
+         *     ),
+         *     @OA\RequestBody(
+         *         required=true,
+         *         @OA\JsonContent(
+         *             @OA\Property(property="id_tipo_ejercicio", type="integer"),
+         *             @OA\Property(property="nombre_ejercicio", type="string"),
+         *             @OA\Property(property="unidad_medida", type="string"),
+         *             @OA\Property(property="demo_ejercicio", type="string"),
+         *         )
+         *     ),
+         *     @OA\Response(
+         *         response=200,
+         *         description="Se almacena un role."
+         *     ),
+         *      @OA\Response(
+         *         response=400,
+         *         description="Duplicidad de valores."
+         *     ),
+         *      @OA\Response(
+         *         response=500,
+         *         description="Error en la base de datos"
+         *     )
+         * )
+    */
+    public function updateEjercicio(Request $request, $id) {
+        $pattern = '/^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]{11})(?:\?[^\s]*)?$/';
+        try {
+            $ejercicio = detalleEjercicio::find($id);
+            $request -> validate([
+                'id_tipo_ejercicio' => 'required|exists:tt_t_tipoejercicio,id',
+                'nombre_ejercicio' => 'required|unique:tt_t_detalleEjercicio,nombre_ejercicio',
+                'unidad_medida' => 'required',
+                'demo_ejercicio' => 'required|youtube_url'
+            ]);
+
+            if($ejercicio){
+                if (preg_match($pattern, $request->demo_ejercicio, $matches)){
+                    $videoId = 'https://www.youtube.com/embed/'.$matches[4];
+    
+                    $ejercicio->id_tipo_ejercicio = $request->id_tipo_ejercicio;
+                    $ejercicio->nombre_ejercicio = $request->nombre_ejercicio;
+                    $ejercicio->unidad_medida = $request->unidad_medida;
+                    $ejercicio->demo_ejercicio = $videoId;
+                    
+                    $ejercicio->save();
+                    return response()->json([
+                        'message' => 'Actualización exitosa',
+                        'detail' => $ejercicio
+                    ], 201);
+                }              
+    
+                return response()->json([
+                    'message' => 'No se pudo procesar al solicitud',
+                ], 500);
+            } else {
+                return response()->json(['message' => $e->getMessage()], 404);
+            }
+        
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error general',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
 }

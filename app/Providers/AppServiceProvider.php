@@ -34,7 +34,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Validator::extend('youtube_url', function($attribute, $value, $parameters, $validator) {
-            $pattern = '/^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[\w-]{11}(?:\?[^\s]*)?$/';
+            $pattern = '/^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)[\w-]{11}(?:\?[^\s]*)?$/';
             return preg_match($pattern, $value);
         });
     }

@@ -509,6 +509,62 @@
                 }
             }
         },
+        "/api/updateEjercicio/{id_ejercicio}": {
+            "put": {
+                "tags": [
+                    "Ejercicios"
+                ],
+                "summary": "Actualiza un ejercicio",
+                "description": "Se actualiza la información de un ejercicio",
+                "operationId": "696aa3d85a318fac55a8ebe6a7d7fc50",
+                "parameters": [
+                    {
+                        "name": "id_ejercicio",
+                        "in": "path",
+                        "description": "Id del ejercicio",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id_tipo_ejercicio": {
+                                        "type": "integer"
+                                    },
+                                    "nombre_ejercicio": {
+                                        "type": "string"
+                                    },
+                                    "unidad_medida": {
+                                        "type": "string"
+                                    },
+                                    "demo_ejercicio": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Se almacena un role."
+                    },
+                    "400": {
+                        "description": "Duplicidad de valores."
+                    },
+                    "500": {
+                        "description": "Error en la base de datos"
+                    }
+                }
+            }
+        },
         "/api/generateInscription": {
             "post": {
                 "tags": [
