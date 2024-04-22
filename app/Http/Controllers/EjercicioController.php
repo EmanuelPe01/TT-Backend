@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\Models\tt_t_TipoEjercicio as tipoEjercicio;
 use App\Models\tt_t_DetalleEjercicio as detalleEjercicio;
 
@@ -339,7 +340,7 @@ class EjercicioController extends Controller
             $ejercicio = detalleEjercicio::find($id);
             $request -> validate([
                 'id_tipo_ejercicio' => 'required|exists:tt_t_tipoejercicio,id',
-                'nombre_ejercicio' => 'required|unique:tt_t_detalleEjercicio,nombre_ejercicio',
+                'nombre_ejercicio' => [Rule::unique('tt_t_detalleEjercicio', 'nombre_ejercicio')->ignore($ejercicio, 'id'),],
                 'unidad_medida' => 'required',
                 'demo_ejercicio' => 'required|youtube_url'
             ]);
@@ -368,7 +369,7 @@ class EjercicioController extends Controller
             }
         
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            return response()->json(['message' => $e->getMessage()], 403);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Error general',
@@ -377,4 +378,50 @@ class EjercicioController extends Controller
         }
     }
 
+    /**
+     * Elimina un ejercicio
+     *
+     * @OA\delete(
+     *     path="/api/deleteEjercicio/{id_ejercicio}",
+     *     tags={"Ejercicios"},
+     *     summary="Elimina un ejercicio",
+     *     @OA\Parameter(
+     *         name="id_ejercicio",
+     *         in="path",
+     *         description="Id del ejercicio",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Registro no encontrado"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error el servidor"
+     *     )
+     * )
+     */  
+    public function deleteEjercicio($id) {
+        try {
+            $ejercicio = detalleEjercicio::find($id);
+
+            if(!$ejercicio){
+                return response()->json(['message' => $e->getMessage()], 404);
+            }
+
+            $ejercicio->delete();
+            
+            return response()->json([
+                'message' => 'Registro eliminado'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error general',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

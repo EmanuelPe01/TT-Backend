@@ -38,6 +38,7 @@ Route::delete('/deleteTypeTrining/{id_tipoEjercicio}', [EjercicioController::cla
 Route::post('/createEjercicio', [EjercicioController::class, 'storeEjercicio']);
 Route::get('/getAllEjercicios', [EjercicioController::class, 'getAllEjercicios']);
 Route::put('/updateEjercicio/{id_ejercicio}', [EjercicioController::class, 'updateEjercicio']);
+Route::delete('/deleteEjercicio/{id_ejercicio}', [EjercicioController::class, 'deleteEjercicio']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/check-status',[UserController::class,'checkStatus']);

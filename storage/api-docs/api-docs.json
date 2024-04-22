@@ -565,6 +565,35 @@
                 }
             }
         },
+        "/api/deleteEjercicio/{id_ejercicio}": {
+            "delete": {
+                "tags": [
+                    "Ejercicios"
+                ],
+                "summary": "Elimina un ejercicio",
+                "description": "Elimina un ejercicio",
+                "operationId": "d6ef721bfc9caa0e85eb60a6148fd69a",
+                "parameters": [
+                    {
+                        "name": "id_ejercicio",
+                        "in": "path",
+                        "description": "Id del ejercicio",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "404": {
+                        "description": "Registro no encontrado"
+                    },
+                    "500": {
+                        "description": "Error el servidor"
+                    }
+                }
+            }
+        },
         "/api/generateInscription": {
             "post": {
                 "tags": [
