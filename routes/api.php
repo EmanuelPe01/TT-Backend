@@ -4,45 +4,55 @@ use App\Http\Controllers\Auth\UserController;
 use App\Http\Controllers\RollController;
 use App\Http\Controllers\InscripcionController;
 use App\Http\Controllers\EjercicioController;
+use App\Http\Controllers\RutinaController;
 use Illuminate\Support\Facades\Route;
 
 
 //RollController
-Route::post('/createRole', [RollController::class, 'store']);
-Route::get('/allRoles', [RollController::class, 'getAllRoles']);
-Route::get('/usersByRole/{rol_id}', [RollController::class, 'getUsersByRole']);
+Route::controller(RollController::class)->group(function () {
+    Route::post('/createRole', 'store');
+    Route::get('/allRoles', 'getAllRoles');
+    Route::get('/usersByRole/{rol_id}', 'getUsersByRole');
+});
 
 //UserController
-Route::post('/createUser', [UserController::class, 'store']);
-Route::post('/login', [UserController::class, 'login'])->name('login');
-Route::get('/allUsers', [UserController::class, 'getAllUsers']);
-Route::post('/sendEmailToRestorePassword', [UserController::class, 'sendEmailToRestorePassword']);
-Route::get('/validateRecoveryToken/{token}', [UserController::class, 'validateRecoveryToken']);
-Route::post('/restorePassword/{token}', [UserController::class, 'restorePassword']);
-
-// A partir de aquí, agregar al middleware
+Route::controller(UserController::class)->group(function () {
+    Route::post('/createUser', 'store');
+    Route::post('/login', 'login')->name('login');
+    Route::get('/allUsers', 'getAllUsers');
+    Route::post('/sendEmailToRestorePassword', 'sendEmailToRestorePassword');
+    Route::get('/validateRecoveryToken/{token}', 'validateRecoveryToken');
+    Route::post('/restorePassword/{token}', 'restorePassword');
+    Route::group(['middleware' => ['auth:sanctum']], function () {
+            Route::get('/check-status', 'checkStatus');
+            Route::post('/logout', 'logout');
+            Route::get('/getDetailInscription', 'getDetailInscription');
+    });
+});
 
 //InscripcionController
-Route::get('/allInscriptions', [InscripcionController::class, 'getAllInscriptions']);
-Route::get('/getInscriptionById/{id_inscripcion}', [InscripcionController::class, 'getInscriptionById']);
-Route::post('/generateInscription', [InscripcionController::class, 'store']);
-Route::put('/updateInscription/{id_inscripcion}', [InscripcionController::class, 'updateInscription']);
-Route::delete('/deleteInscription/{id_inscripcion}', [InscripcionController::class, 'deleteInscription']);
+Route::controller(InscripcionController::class)->group(function () {
+    Route::get('/allInscriptions', 'getAllInscriptions');
+    Route::get('/getInscriptionById/{id_inscripcion}', 'getInscriptionById');
+    Route::post('/generateInscription', 'store');
+    Route::put('/updateInscription/{id_inscripcion}', 'updateInscription');
+    Route::delete('/deleteInscription/{id_inscripcion}', 'deleteInscription');
+});
 
 //Ejercicios
-Route::post('/createTipoEjercicio', [EjercicioController::class, 'storeTipoEjercicio']);
-Route::get('/getAllTipoEjercicio', [EjercicioController::class, 'getAllTipoEjercicio']);
-Route::put('/updateTypeTrining/{id_tipoEjercicio}', [EjercicioController::class, 'updateTipoEjercicio']);
-Route::delete('/deleteTypeTrining/{id_tipoEjercicio}', [EjercicioController::class, 'deleteTipoEjericio']);
+Route::controller(EjercicioController::class)->group(function () {
+    //Tipos de ejercicio
+    Route::post('/createTipoEjercicio', 'storeTipoEjercicio');
+    Route::get('/getAllTipoEjercicio', 'getAllTipoEjercicio');
+    Route::put('/updateTypeTrining/{id_tipoEjercicio}', 'updateTipoEjercicio');
+    Route::delete('/deleteTypeTrining/{id_tipoEjercicio}', 'deleteTipoEjericio');
+    //Ejercicios
+    Route::post('/createEjercicio', 'storeEjercicio');
+    Route::get('/getAllEjercicios', 'getAllEjercicios');
+    Route::put('/updateEjercicio/{id_ejercicio}', 'updateEjercicio');
+    Route::delete('/deleteEjercicio/{id_ejercicio}', 'deleteEjercicio');
+});
 
-Route::post('/createEjercicio', [EjercicioController::class, 'storeEjercicio']);
-Route::get('/getAllEjercicios', [EjercicioController::class, 'getAllEjercicios']);
-Route::put('/updateEjercicio/{id_ejercicio}', [EjercicioController::class, 'updateEjercicio']);
-Route::delete('/deleteEjercicio/{id_ejercicio}', [EjercicioController::class, 'deleteEjercicio']);
-
-Route::group(['middleware' => ['auth:sanctum']], function () {
-    Route::get('/check-status',[UserController::class,'checkStatus']);
-    Route::post('/logout', [UserController::class, 'logout']);
-
-    Route::get('/getDetailInscription', [UserController::class, 'getDetailInscription']);
+Route::controller(RutinaController::class)->group(function (){
+    Route::post('/createRutina', 'storeWood');
 });

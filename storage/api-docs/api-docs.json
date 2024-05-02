@@ -853,6 +853,92 @@
                     }
                 }
             }
+        },
+        "/api/rutinas": {
+            "post": {
+                "tags": [
+                    "Rutinas"
+                ],
+                "summary": "Crear una rutina",
+                "operationId": "455c1a6db222adabb7d536d82852aa8b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "fecha_rutina",
+                                    "rondas",
+                                    "tiempo",
+                                    "peso",
+                                    "halterofilia",
+                                    "ejercicios"
+                                ],
+                                "properties": {
+                                    "fecha_rutina": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2024-10-10"
+                                    },
+                                    "rondas": {
+                                        "type": "integer",
+                                        "example": 5
+                                    },
+                                    "tiempo": {
+                                        "type": "integer",
+                                        "example": 10
+                                    },
+                                    "peso": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 45
+                                    },
+                                    "halterofilia": {
+                                        "type": "integer",
+                                        "enum": [
+                                            0,
+                                            1
+                                        ],
+                                        "example": 0
+                                    },
+                                    "ejercicios": {
+                                        "type": "array",
+                                        "items": {
+                                            "required": [
+                                                "id_ejercicio",
+                                                "cantidad_ejercicio"
+                                            ],
+                                            "properties": {
+                                                "id_ejercicio": {
+                                                    "type": "integer",
+                                                    "example": 5
+                                                },
+                                                "cantidad_ejercicio": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Rutina creada exitosamente"
+                    },
+                    "400": {
+                        "description": "Datos de entrada inválidos"
+                    },
+                    "500": {
+                        "description": "Error en la base de datos"
+                    }
+                }
+            }
         }
     },
     "components": {

@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('tt_t_rutina', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_ejercicio');
-            $table->foreign('id_ejercicio')->references('id')->on('tt_t_inscripcion')->onDelete('cascade');
+            $table->unsignedBigInteger('id_inscripcion');
+            $table->foreign('id_inscripcion')->references('id')->on('tt_t_inscripcion')->onDelete('cascade');
             $table->date('fecha_rutina');
             $table->integer('rondas');
             $table->string('tiempo');
