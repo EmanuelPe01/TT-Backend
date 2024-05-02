@@ -854,19 +854,20 @@
                 }
             }
         },
-        "/api/rutinas": {
+        "/api/createRutina": {
             "post": {
                 "tags": [
                     "Rutinas"
                 ],
                 "summary": "Crear una rutina",
-                "operationId": "455c1a6db222adabb7d536d82852aa8b",
+                "operationId": "08a4c4b858feddeda0e7342c5f1a475c",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "required": [
+                                    "id_inscripcion",
                                     "fecha_rutina",
                                     "rondas",
                                     "tiempo",
@@ -875,6 +876,10 @@
                                     "ejercicios"
                                 ],
                                 "properties": {
+                                    "id_inscripcion": {
+                                        "type": "integer",
+                                        "example": "2"
+                                    },
                                     "fecha_rutina": {
                                         "type": "string",
                                         "format": "date",
@@ -935,7 +940,7 @@
                         "description": "Datos de entrada inválidos"
                     },
                     "500": {
-                        "description": "Error en la base de datos"
+                        "description": "Error general"
                     }
                 }
             }

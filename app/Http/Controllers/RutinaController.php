@@ -11,13 +11,14 @@ class RutinaController extends Controller
 {
     /**
      * @OA\Post(
-     *     path="/api/rutinas",
+     *     path="/api/createRutina",
      *     tags={"Rutinas"},
      *     summary="Crear una rutina",
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"fecha_rutina", "rondas", "tiempo", "peso", "halterofilia", "ejercicios"},
+     *             required={"id_inscripcion", "fecha_rutina", "rondas", "tiempo", "peso", "halterofilia", "ejercicios"},
+     *             @OA\Property(property="id_inscripcion", type="integer", example="2"),
      *             @OA\Property(property="fecha_rutina", type="string", format="date", example="2024-10-10"),
      *             @OA\Property(property="rondas", type="integer", example=5),
      *             @OA\Property(property="tiempo", type="integer", example=10),
