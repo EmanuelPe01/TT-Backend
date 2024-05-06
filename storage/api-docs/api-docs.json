@@ -509,6 +509,24 @@
                 }
             }
         },
+        "/api/getInfoBasicEjercicios": {
+            "get": {
+                "tags": [
+                    "Ejercicios"
+                ],
+                "summary": "Consulta los ejercicios",
+                "description": "Se consulta la información básica de los ejercicios",
+                "operationId": "26306e30d957c2009a113c21ec026905",
+                "responses": {
+                    "200": {
+                        "description": "Retorna una lista con la información básica de los ejercicios"
+                    },
+                    "500": {
+                        "description": "Error general"
+                    }
+                }
+            }
+        },
         "/api/updateEjercicio/{id_ejercicio}": {
             "put": {
                 "tags": [

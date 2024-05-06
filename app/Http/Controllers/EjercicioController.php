@@ -295,6 +295,34 @@ class EjercicioController extends Controller
         }
     }
 
+    /**
+         * Se consulta la información básica de los ejercicios 
+         *
+         * @OA\Get(
+         *     path="/api/getInfoBasicEjercicios",
+         *     tags={"Ejercicios"},
+         *     summary="Consulta los ejercicios",
+         *     @OA\Response(
+         *         response=200,
+         *         description="Retorna una lista con la información básica de los ejercicios"
+         *     ),
+         *      @OA\Response(
+         *         response=500,
+         *         description="Error general"
+         *     )
+         * )
+    */
+    public function getInfoBasicEjercicios() {
+        try{
+            // Obtiene todos los ejercicios y selecciona solo el ID y el nombre
+            $ejercicios = detalleEjercicio::select('id', 'nombre_ejercicio', 'id_tipo_ejercicio', 'unidad_medida')->get();
+            // Retorna la respuesta JSON con los ejercicios seleccionados
+            return response()->json($ejercicios, 200);
+        } catch (\Exception $e) {
+            return response()->json($e, 500);
+        }
+    }
+
      /**
          * Se actualiza la información de un ejercicio
          *

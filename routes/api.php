@@ -24,9 +24,9 @@ Route::controller(UserController::class)->group(function () {
     Route::get('/validateRecoveryToken/{token}', 'validateRecoveryToken');
     Route::post('/restorePassword/{token}', 'restorePassword');
     Route::group(['middleware' => ['auth:sanctum']], function () {
-            Route::get('/check-status', 'checkStatus');
-            Route::post('/logout', 'logout');
-            Route::get('/getDetailInscription', 'getDetailInscription');
+        Route::get('/check-status', 'checkStatus');
+        Route::post('/logout', 'logout');
+        Route::get('/getDetailInscription', 'getDetailInscription');
     });
 });
 
@@ -37,6 +37,7 @@ Route::controller(InscripcionController::class)->group(function () {
     Route::post('/generateInscription', 'store');
     Route::put('/updateInscription/{id_inscripcion}', 'updateInscription');
     Route::delete('/deleteInscription/{id_inscripcion}', 'deleteInscription');
+    Route::get('/getActiveInscription', 'getActiveInscription');
 });
 
 //Ejercicios
@@ -49,6 +50,7 @@ Route::controller(EjercicioController::class)->group(function () {
     //Ejercicios
     Route::post('/createEjercicio', 'storeEjercicio');
     Route::get('/getAllEjercicios', 'getAllEjercicios');
+    Route::get('/getInfoBasicEjercicios', 'getInfoBasicEjercicios');
     Route::put('/updateEjercicio/{id_ejercicio}', 'updateEjercicio');
     Route::delete('/deleteEjercicio/{id_ejercicio}', 'deleteEjercicio');
 });

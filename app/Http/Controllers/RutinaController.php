@@ -65,7 +65,7 @@ class RutinaController extends Controller
                 'halterofilia' => 'required|boolean',
                 'ejercicios' => 'required|array',
                 'ejercicios.*.id_ejercicio' => 'required|integer|exists:tt_t_detalleEjercicio,id',
-                'ejercicios.*.cantidad_ejercicio' => 'required|integer|min:1',
+                'ejercicios.*.cantidad_ejercicio' => 'required|min:1',
             ]);
 
             $rutina = Rutina::create([

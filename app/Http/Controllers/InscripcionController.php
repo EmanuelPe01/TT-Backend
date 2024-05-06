@@ -256,4 +256,20 @@ class InscripcionController extends Controller
             ], 500);
         }
     }
+
+    public function getActiveInscription() {
+        try {
+            $inscripciones = Inscripcion::select('id', 'id_user_cliente', 'estado', 'peso_maximo')
+            ->where('estado', 1)
+            ->with(['cliente' => function ($query) {
+                $query->select('id', 'name', 'firstSurname', 'secondSurname');
+            }])->get();
+            return response()->json($inscripciones, 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error general',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
