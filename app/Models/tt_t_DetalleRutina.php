@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\tt_t_DetalleEjercicio as detalleEjercicio;
 
 class tt_t_DetalleRutina extends Model
 {
@@ -21,4 +22,8 @@ class tt_t_DetalleRutina extends Model
         'updated_at',
         'id_rutina'
     ];
+
+    public function detalleEjercicio() {
+        return $this->belongsTo(detalleEjercicio::class, 'id_ejercicio');
+    }
 }

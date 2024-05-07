@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\tt_t_DetalleRutina as detalleRutina;
 
 class tt_t_Rutina extends Model
 {
@@ -26,6 +27,6 @@ class tt_t_Rutina extends Model
     
     public function detalleRutina()
     {
-        return $this->hasMany(tt_t_detalleRutina::class, 'id_rutina');
+        return $this->hasMany(detalleRutina::class, 'id_rutina')->with('detalleEjercicio');
     }
 }

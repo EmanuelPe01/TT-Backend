@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\tt_t_Rutina as Rutina;
 use App\Models\tt_t_DetalleRutina as DetalleRutina;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class RutinaController extends Controller
 {
@@ -103,19 +104,110 @@ class RutinaController extends Controller
     }
 
 
-    public function show($id)
+    /**
+     * @OA\Get(
+     *     path="/api/rutinas",
+     *     summary="Obtener rutinas por inscripción, fecha inicio, fecha fin y halterofilia",
+     *     tags={"Rutinas"},
+     *     @OA\Parameter(
+     *         name="id_inscripcion",
+     *         in="query",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64"
+     *         ),
+     *         description="ID de la inscripción"
+     *     ),
+     *     @OA\Parameter(
+     *         name="fecha_inicio",
+     *         in="query",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string",
+     *             format="date",
+     *             example="2022-01-01"
+     *         ),
+     *         description="Fecha de inicio en formato YYYY-MM-DD"
+     *     ),
+     *     @OA\Parameter(
+     *         name="fecha_fin",
+     *         in="query",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string",
+     *             format="date",
+     *             example="2022-01-31"
+     *         ),
+     *         description="Fecha de fin en formato YYYY-MM-DD"
+     *     ),
+     *     @OA\Parameter(
+     *         name="halterofilia",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="integer",
+     *             enum={0, 1},
+     *             example=1
+     *         ),
+     *         description="Indicador de halterofilia (0 para no, 1 para sí)"
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Rutinas obtenidas con éxito"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error al obtener las rutinas"
+     *     )
+     * )
+     */
+
+    public function showRutinas(Request $request)
     {
-        //
+        try {
+            $id_inscripcion = $request->query('id_inscripcion');
+            $fecha_inicio = $request->query('fecha_inicio');
+            $fecha_fin = $request->query('fecha_fin');
+            $halterofilia = $request->query('halterofilia');
+            $halterofilia = filter_var($halterofilia, FILTER_VALIDATE_BOOLEAN);
+
+            $rutinas = Rutina::where('id_inscripcion', $id_inscripcion)
+                ->whereBetween('fecha_rutina', [$fecha_inicio, $fecha_fin])
+                ->where('halterofilia', $halterofilia)
+                ->with('detalleRutina')
+                ->get();
+
+            
+            foreach ($rutinas as $rutina) {
+                $rutina->fecha_rutina = ucfirst(Carbon::parse($rutina->fecha_rutina)->translatedFormat('l j \\de F Y'));
+            }
+
+            return response()->json($rutinas, 200);
+        } catch (\Exception $e) {
+            return response()->json($e->getMessage(), 500);
+        }
     }
 
-    public function update(Request $request, $id)
+    public function deleteRutina($id)
     {
-        //
-    }
+        try {
+            $rutina = Rutina::find($id);
 
+            if(!$rutina){
+                return response()->json(['message' => $e->getMessage()], 404);
+            }
 
-    public function destroy($id)
-    {
-        //
+            $rutina->delete();
+            
+            return response()->json([
+                'message' => 'Registro eliminado'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error general',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

@@ -57,4 +57,6 @@ Route::controller(EjercicioController::class)->group(function () {
 
 Route::controller(RutinaController::class)->group(function (){
     Route::post('/createRutina', 'storeWood');
+    Route::get('/showRutinas', 'showRutinas');
+    Route::delete('/deleteRutina/{id_rutina}', 'deleteRutina');
 });
