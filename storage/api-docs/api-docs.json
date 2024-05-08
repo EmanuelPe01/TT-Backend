@@ -962,6 +962,71 @@
                     }
                 }
             }
+        },
+        "/api/showRutinas": {
+            "get": {
+                "tags": [
+                    "Rutinas"
+                ],
+                "summary": "Obtener rutinas por inscripción, fecha inicio, fecha fin y halterofilia",
+                "operationId": "e7f47cb661782b4a5394807d434428ba",
+                "parameters": [
+                    {
+                        "name": "id_inscripcion",
+                        "in": "query",
+                        "description": "ID de la inscripción",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "fecha_inicio",
+                        "in": "query",
+                        "description": "Fecha de inicio en formato YYYY-MM-DD",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2024-05-05"
+                        }
+                    },
+                    {
+                        "name": "fecha_fin",
+                        "in": "query",
+                        "description": "Fecha de fin en formato YYYY-MM-DD",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2024-05-05"
+                        }
+                    },
+                    {
+                        "name": "halterofilia",
+                        "in": "query",
+                        "description": "Indicador de halterofilia (0 para no, 1 para sí)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "enum": [
+                                0,
+                                1
+                            ],
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Rutinas obtenidas con éxito"
+                    },
+                    "500": {
+                        "description": "Error al obtener las rutinas"
+                    }
+                }
+            }
         }
     },
     "components": {

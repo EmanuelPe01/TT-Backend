@@ -7,6 +7,7 @@ use App\Models\tt_t_Rutina as Rutina;
 use App\Models\tt_t_DetalleRutina as DetalleRutina;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Arr;
 
 class RutinaController extends Controller
 {
@@ -106,7 +107,7 @@ class RutinaController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/rutinas",
+     *     path="/api/showRutinas",
      *     summary="Obtener rutinas por inscripción, fecha inicio, fecha fin y halterofilia",
      *     tags={"Rutinas"},
      *     @OA\Parameter(
@@ -126,7 +127,7 @@ class RutinaController extends Controller
      *         @OA\Schema(
      *             type="string",
      *             format="date",
-     *             example="2022-01-01"
+     *             example="2024-05-05"
      *         ),
      *         description="Fecha de inicio en formato YYYY-MM-DD"
      *     ),
@@ -137,7 +138,7 @@ class RutinaController extends Controller
      *         @OA\Schema(
      *             type="string",
      *             format="date",
-     *             example="2022-01-31"
+     *             example="2024-05-05"
      *         ),
      *         description="Fecha de fin en formato YYYY-MM-DD"
      *     ),
@@ -178,7 +179,7 @@ class RutinaController extends Controller
                 ->with('detalleRutina')
                 ->get();
 
-            
+
             foreach ($rutinas as $rutina) {
                 $rutina->fecha_rutina = ucfirst(Carbon::parse($rutina->fecha_rutina)->translatedFormat('l j \\de F Y'));
             }
@@ -194,15 +195,63 @@ class RutinaController extends Controller
         try {
             $rutina = Rutina::find($id);
 
-            if(!$rutina){
+            if (!$rutina) {
                 return response()->json(['message' => $e->getMessage()], 404);
             }
 
             $rutina->delete();
-            
+
             return response()->json([
                 'message' => 'Registro eliminado'
             ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error general',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function updateRutina(Request $request, int $id)
+    {
+        try {
+            $request->validate([
+                'id_inscripcion' => 'required|inscripcion_activa',
+                'fecha_rutina' => 'required|date',
+                'rondas' => 'required|integer',
+                'tiempo' => 'required|integer',
+                'peso' => 'numeric',
+                'halterofilia' => 'required|boolean',
+                'ejercicios' => 'required|array',
+                'ejercicios.*.id_ejercicio' => 'required|integer|exists:tt_t_detalleEjercicio,id',
+                'ejercicios.*.cantidad_ejercicio' => 'required|min:1',
+                'ejercicios.*.accion' => 'required'
+            ]);
+
+            $rutina = Rutina::findOrFail($id);
+            $rutina->update($request->only(['fecha_rutina', 'rondas', 'tiempo', 'peso', 'halterofilia']));
+
+            foreach ($request->detalle_rutinas as $detalle) {
+                if ($detalle['accion'] === 'agregar') {
+                    $nuevoDetalle = new DetalleRutina($detalle);
+                    $rutina->detalleRutinas()->save($nuevoDetalle);
+                } elseif ($detalle['accion'] === 'modificar') {
+                    $detalleExistente = DetalleRutina::findOrFail($detalle['id']);
+                    $detalleExistente->update(Arr::except($detalle, ['id', 'accion']));
+                } elseif ($detalle['accion'] === 'eliminar') {
+                    DetalleRutina::findOrFail($detalle['id'])->delete();
+                }
+            }
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'recurso no encontrado',
+                'detail' => $e
+            ], 404);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'message' => 'Error de validación',
+                'errors' => $e->errors()
+            ], 400);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Error general',
