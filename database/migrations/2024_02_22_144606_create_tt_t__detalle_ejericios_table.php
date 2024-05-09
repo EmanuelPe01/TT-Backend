@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('tt_t_detalleEjericio', function (Blueprint $table) {
+        Schema::create('tt_t_detalleEjercicio', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_tipo_ejercicio');
             $table->foreign('id_tipo_ejercicio')->references('id')->on('tt_t_tipoEjercicio')->onDelete('cascade');

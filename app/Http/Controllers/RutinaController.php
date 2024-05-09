@@ -216,7 +216,6 @@ class RutinaController extends Controller
     {
         try {
             $request->validate([
-                'id_inscripcion' => 'required|inscripcion_activa',
                 'fecha_rutina' => 'required|date',
                 'rondas' => 'required|integer',
                 'tiempo' => 'required|integer',
@@ -231,17 +230,26 @@ class RutinaController extends Controller
             $rutina = Rutina::findOrFail($id);
             $rutina->update($request->only(['fecha_rutina', 'rondas', 'tiempo', 'peso', 'halterofilia']));
 
-            foreach ($request->detalle_rutinas as $detalle) {
+            foreach ($request->ejercicios as $detalle) {
                 if ($detalle['accion'] === 'agregar') {
-                    $nuevoDetalle = new DetalleRutina($detalle);
-                    $rutina->detalleRutinas()->save($nuevoDetalle);
+                    DetalleRutina::create([
+                        'id_rutina' => $rutina->id, 
+                        'id_ejercicio' => $detalle['id_ejercicio'],
+                        'cantidad_ejercicio' => $detalle['cantidad_ejercicio'],
+                    ]);
                 } elseif ($detalle['accion'] === 'modificar') {
-                    $detalleExistente = DetalleRutina::findOrFail($detalle['id']);
-                    $detalleExistente->update(Arr::except($detalle, ['id', 'accion']));
+                    $ejercicio = DetalleRutina::find($detalle['id']);
+                    $ejercicio->id_ejercicio = $detalle['id_ejercicio'];
+                    $ejercicio->cantidad_ejercicio = $detalle['cantidad_ejercicio'];
+                    $ejercicio->save();
                 } elseif ($detalle['accion'] === 'eliminar') {
                     DetalleRutina::findOrFail($detalle['id'])->delete();
                 }
             }
+
+            return response()->json([
+                'message' => 'Registro almacenado'
+            ], 200);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
                 'message' => 'recurso no encontrado',
