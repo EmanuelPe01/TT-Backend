@@ -235,7 +235,7 @@ class EjercicioController extends Controller
             $request -> validate([
                 'id_tipo_ejercicio' => 'required|exists:tt_t_tipoejercicio,id',
                 'nombre_ejercicio' => 'required|unique:tt_t_detalleEjercicio,nombre_ejercicio',
-                'unidad_medida' => 'required',
+                'id_unidad_medida' => 'required|exists:tt_t_unidadesMedida,id',
                 'demo_ejercicio' => 'required|youtube_url'
             ]);
 
@@ -243,8 +243,8 @@ class EjercicioController extends Controller
                 $videoId = $matches[4];
                 $ejercicio = detalleEjercicio::create([
                     'id_tipo_ejercicio' => $request->id_tipo_ejercicio,
+                    'id_unidad_medida' => $request->id_unidad_medida,
                     'nombre_ejercicio' => $request->nombre_ejercicio,
-                    'unidad_medida' => $request->unidad_medida,
                     'demo_ejercicio' => 'https://www.youtube.com/embed/'.$videoId
                 ]);
     
@@ -287,7 +287,7 @@ class EjercicioController extends Controller
     */
     public function getAllEjercicios() {
         try{
-            $ejercicios = detalleEjercicio::with('tipoEjercicio')->get();
+            $ejercicios = detalleEjercicio::with('tipoEjercicio', 'unidadMedida')->get();
 
             return response()->json($ejercicios, 200);
         } catch (\Exception $e) {
