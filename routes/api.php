@@ -5,6 +5,7 @@ use App\Http\Controllers\RollController;
 use App\Http\Controllers\InscripcionController;
 use App\Http\Controllers\EjercicioController;
 use App\Http\Controllers\RutinaController;
+use App\Http\Controllers\UnidadesMedidaController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -60,4 +61,12 @@ Route::controller(RutinaController::class)->group(function (){
     Route::get('/showRutinas', 'showRutinas');
     Route::delete('/deleteRutina/{id_rutina}', 'deleteRutina');
     Route::put('/updateRutina/{id_rutina}', 'updateRutina');
+});
+
+//Unidades de medida
+Route::controller(UnidadesMedidaController::class)->group(function (){
+    Route::post('/createUnidadMedida', 'store');
+    Route::get('/allUnidadesMedida', 'getAll');
+    Route::put('/updateUnidadMedida/{id_unidadMedida}', 'update');
+    Route::delete('/deleteUnidadMedida/{id_unidadMedida}', 'destroy');
 });

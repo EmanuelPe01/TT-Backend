@@ -17,9 +17,10 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('id_tipo_ejercicio');
             $table->foreign('id_tipo_ejercicio')->references('id')->on('tt_t_tipoEjercicio')->onDelete('cascade');
+            $table->unsignedBigInteger('id_unidad_medida');
+            $table->foreign('id_unidad_medida')->references('id')->on('tt_t_unidadesMedida')->onDelete('cascade');
             $table->string('nombre_ejercicio');
             $table->string('demo_ejercicio');
-            $table->string('unidad_medida');
             $table->timestamps();
         });
     }

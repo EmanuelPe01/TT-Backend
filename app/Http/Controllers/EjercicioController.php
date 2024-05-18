@@ -182,7 +182,7 @@ class EjercicioController extends Controller
             $tipoEjercicio = tipoEjercicio::find($id);
 
             if(!$tipoEjercicio){
-                return response()->json(['message' => $e->getMessage()], 404);
+                return response()->json(404);
             }
 
             $tipoEjercicio->delete();
@@ -393,7 +393,7 @@ class EjercicioController extends Controller
                     'message' => 'No se pudo procesar al solicitud',
                 ], 500);
             } else {
-                return response()->json(['message' => $e->getMessage()], 404);
+                return response()->json(404);
             }
         
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -437,7 +437,7 @@ class EjercicioController extends Controller
             $ejercicio = detalleEjercicio::find($id);
 
             if(!$ejercicio){
-                return response()->json(['message' => $e->getMessage()], 404);
+                return response()->json(404);
             }
 
             $ejercicio->delete();

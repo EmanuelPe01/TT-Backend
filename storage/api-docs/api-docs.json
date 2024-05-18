@@ -1027,6 +1027,133 @@
                     }
                 }
             }
+        },
+        "/api/createUnidadMedida": {
+            "post": {
+                "tags": [
+                    "Unidades de medida"
+                ],
+                "summary": "Creación de una unidad de medida",
+                "description": "Se crea una unidad de medida",
+                "operationId": "41ba63fd13c9b61cab9577c62dcba62e",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "unidad_medida": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Se almacena una unidad de medida"
+                    },
+                    "400": {
+                        "description": "Duplicidad de valores."
+                    },
+                    "500": {
+                        "description": "Error en la base de datos"
+                    }
+                }
+            }
+        },
+        "/api/allUnidadesMedida": {
+            "get": {
+                "tags": [
+                    "Unidades de medida"
+                ],
+                "summary": "Se obtienen todas las unidades de medida",
+                "description": "Se consultan todas las unidades de medida",
+                "operationId": "f23df1287fd7f5cc0715a07a5444e222",
+                "responses": {
+                    "200": {
+                        "description": "Retorna la informacion de todas las unidades de medida"
+                    },
+                    "500": {
+                        "description": "Error general"
+                    }
+                }
+            }
+        },
+        "/api/updateUnidadMedida/{id_unidadMedida}": {
+            "put": {
+                "tags": [
+                    "Unidades de medida"
+                ],
+                "summary": "Actualiza una unidad de medida",
+                "description": "Se actualiza una unidad de medida",
+                "operationId": "53b4ed323c4066d9887b00d3aec767cd",
+                "parameters": [
+                    {
+                        "name": "id_unidadMedida",
+                        "in": "path",
+                        "description": "Id de la Unidad de medida",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "unidad_medida": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Se almacena la unidad de media"
+                    },
+                    "500": {
+                        "description": "Error en la base de datos"
+                    }
+                }
+            }
+        },
+        "/api/deleteUnidadMedida/{id_unidadMedida}": {
+            "delete": {
+                "tags": [
+                    "Unidades de medida"
+                ],
+                "summary": "Elimina una unidad de medida",
+                "description": "Elimina una unidad de medida",
+                "operationId": "b9102115a595555f76e5c13908cfb8fd",
+                "parameters": [
+                    {
+                        "name": "id_unidadMedida",
+                        "in": "path",
+                        "description": "Id de la unidad de medida",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "404": {
+                        "description": "Registro no encontrado"
+                    },
+                    "500": {
+                        "description": "Error el servidor"
+                    }
+                }
+            }
         }
     },
     "components": {
