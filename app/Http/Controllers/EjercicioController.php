@@ -315,7 +315,7 @@ class EjercicioController extends Controller
     public function getInfoBasicEjercicios() {
         try{
             // Obtiene todos los ejercicios y selecciona solo el ID y el nombre
-            $ejercicios = detalleEjercicio::select('id', 'nombre_ejercicio', 'id_tipo_ejercicio', 'unidad_medida')->get();
+            $ejercicios = detalleEjercicio::select('id', 'nombre_ejercicio', 'id_tipo_ejercicio', 'id_unidad_medida')->with('unidadMedida')->get();
             // Retorna la respuesta JSON con los ejercicios seleccionados
             return response()->json($ejercicios, 200);
         } catch (\Exception $e) {
@@ -369,7 +369,7 @@ class EjercicioController extends Controller
             $request -> validate([
                 'id_tipo_ejercicio' => 'required|exists:tt_t_tipoejercicio,id',
                 'nombre_ejercicio' => [Rule::unique('tt_t_detalleEjercicio', 'nombre_ejercicio')->ignore($ejercicio, 'id'),],
-                'unidad_medida' => 'required',
+                'id_unidad_medida' => 'required|exists:tt_t_unidadesMedida,id',
                 'demo_ejercicio' => 'required|youtube_url'
             ]);
 
@@ -379,7 +379,7 @@ class EjercicioController extends Controller
     
                     $ejercicio->id_tipo_ejercicio = $request->id_tipo_ejercicio;
                     $ejercicio->nombre_ejercicio = $request->nombre_ejercicio;
-                    $ejercicio->unidad_medida = $request->unidad_medida;
+                    $ejercicio->id_unidad_medida = $request->id_unidad_medida;
                     $ejercicio->demo_ejercicio = $videoId;
                     
                     $ejercicio->save();

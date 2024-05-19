@@ -24,6 +24,6 @@ class tt_t_DetalleRutina extends Model
     ];
 
     public function detalleEjercicio() {
-        return $this->belongsTo(detalleEjercicio::class, 'id_ejercicio');
+        return $this->belongsTo(detalleEjercicio::class, 'id_ejercicio')->with('unidadMedida');
     }
 }
