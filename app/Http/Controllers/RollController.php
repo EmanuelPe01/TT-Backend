@@ -84,10 +84,8 @@ class RollController extends Controller
     */
     public function getAllRoles()
     {
-        $roles = Rol::with('usuarios')->get();
-        return response()->json([
-            'roles' => $roles
-        ], 200);
+        $roles = Rol::all();
+        return response()->json($roles, 200);
     }
 
     /**

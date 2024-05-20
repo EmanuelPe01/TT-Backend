@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use App\Mail\RecoveryPasswordMail;
+use Carbon\Carbon;
 
 /**
  * @OA\Info(
@@ -181,10 +182,12 @@ class UserController extends Controller
     public function getAllUsers()
     {
         try {
-            $users = User::all();
-            return response()->json([
-                'users' => $users
-            ], 200);
+            $users = User::with('rol')->get()->map(function ($user) {
+                $user->fecha_nacimiento = new Carbon($user->fecha_nacimiento);
+                $user->fecha_nacimiento = $user->fecha_nacimiento->format('d/m/Y');
+                return $user;
+            });
+            return response()->json($users, 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json([
                 'message' => 'Error en la base de datos',
