@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Models\tt_t_usuario as User;
+use App\Models\tt_t_rol as Rol;
 use App\Http\Controllers\Controller;
 
 use Illuminate\Support\Facades\Auth;
@@ -10,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use App\Mail\RecoveryPasswordMail;
+use App\Mail\NewUserMail;
 use Carbon\Carbon;
 
 /**
@@ -25,6 +27,8 @@ class UserController extends Controller
      /**
      * Se crea un usuario
      * El formato de la fecha es YYYY-MM-DD
+     * Modo 1 para Registro por parte del cliente
+     * Modo 2 para Registro desde gestión de usuarios
      * @OA\Post(
      *     path="/api/createUser",
      *     tags={"Users"},
@@ -40,6 +44,7 @@ class UserController extends Controller
      *             @OA\Property(property="email", type="string"),
      *             @OA\Property(property="fecha_nacimiento", type="string"),
      *             @OA\Property(property="password", type="string"),
+     *             @OA\Property(property="modo", type="integer"),
      *         )
      *     ),
      *     @OA\Response(
@@ -63,10 +68,27 @@ class UserController extends Controller
                 'secondSurname' => 'required',
                 'telephone' => 'unique:TT_T_Usuario',
                 'email' => 'required|email|unique:TT_T_Usuario',
-                'password' => 'required',
-                'fecha_nacimiento' => 'required|date_format:Y-m-d'
+                'fecha_nacimiento' => 'required|date_format:Y-m-d',
+                'modo' => 'required'
             ]);
-        
+
+            $modo = $request->modo;
+            $pass = '';
+            $sendEmail = false;
+
+            //Modo 1: El cliente se registra
+            //Modo 2: El administrador registra al usuario
+            if($modo == 1) {
+                $request->validate([
+                    'password' => 'required',
+                ]);
+                $pass = $request->password;
+            } else if($modo == 2) {
+                $pass = str::random(8);
+                $sendEmail = true;
+            }
+
+            
             $user = User::create([
                 'id_rol' => $request->id_rol,
                 'name' => $request->name,
@@ -75,10 +97,14 @@ class UserController extends Controller
                 'telephone' => $request->telephone,
                 'email' => $request->email,
                 'fecha_nacimiento' => $request->fecha_nacimiento,
-                'password' => bcrypt($request->password),
+                'password' => bcrypt($pass)
             ]);
 
-            $user->rol;
+            $role = $user->rol->rol_name;
+
+            if($sendEmail) {
+                Mail::to($user->email)->send(new NewUserMail($user, $role, $pass));
+            }
 
             return response()->json([
                 'message' => 'Usuario registrado correctamente',
@@ -179,10 +205,11 @@ class UserController extends Controller
      * )
     */
     
-    public function getAllUsers()
+    public function getAllUsers(Request $request)
     {
         try {
-            $users = User::with('rol')->get()->map(function ($user) {
+            $currentUser = $request->user();
+            $users = User::with('rol')->where('id', '!=', $currentUser->id)->get()->map(function ($user) {
                 $user->fecha_nacimiento = new Carbon($user->fecha_nacimiento);
                 $user->fecha_nacimiento = $user->fecha_nacimiento->format('d/m/Y');
                 return $user;
@@ -492,6 +519,55 @@ class UserController extends Controller
             return response()->json([
                 'message' => 'No cuenta con inscrpcion'
             ], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error en el servidor',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Elimina un usuario
+     *
+     * @OA\delete(
+     *     path="/api/deleteUsuario/{id_usuario}",
+     *     tags={"Users"},
+     *     summary="Elimina un usuario",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Parameter(
+     *         name="id_usuario",
+     *         in="path",
+     *         description="Id del usuario",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Registro no encontrado"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error el servidor"
+     *     )
+     * )
+     */  
+    public function deleteUsuario(Request $request, int $id) {
+        try {
+            $currentUser = $request->user();
+            if($currentUser->rol->id == 3) {
+                $user = User::find($id);
+
+                if($user) {
+                    $user->delete();
+                    return response()->json(200);
+                }
+                return response()->json(404);
+            }
+
+            return response()->json(403);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Error en el servidor',

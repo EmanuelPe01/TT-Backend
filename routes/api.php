@@ -20,7 +20,6 @@ Route::controller(RollController::class)->group(function () {
 Route::controller(UserController::class)->group(function () {
     Route::post('/createUser', 'store');
     Route::post('/login', 'login')->name('login');
-    Route::get('/allUsers', 'getAllUsers');
     Route::post('/sendEmailToRestorePassword', 'sendEmailToRestorePassword');
     Route::get('/validateRecoveryToken/{token}', 'validateRecoveryToken');
     Route::post('/restorePassword/{token}', 'restorePassword');
@@ -28,6 +27,8 @@ Route::controller(UserController::class)->group(function () {
         Route::get('/check-status', 'checkStatus');
         Route::post('/logout', 'logout');
         Route::get('/getDetailInscription', 'getDetailInscription');
+        Route::get('/allUsers', 'getAllUsers');
+        Route::delete('/deleteUsuario/{id_usuario}', 'deleteUsuario');
     });
 });
 

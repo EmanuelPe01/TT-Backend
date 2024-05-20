@@ -12,7 +12,7 @@
                     "Users"
                 ],
                 "summary": "Creación de un usuario",
-                "description": "Se crea un usuario\nEl formato de la fecha es YYYY-MM-DD",
+                "description": "Se crea un usuario\nEl formato de la fecha es YYYY-MM-DD\nModo 1 para Registro por parte del cliente\nModo 2 para Registro desde gestión de usuarios",
                 "operationId": "2ecb32257bbde019abcc0fcfe680a018",
                 "requestBody": {
                     "required": true,
@@ -43,6 +43,9 @@
                                     },
                                     "password": {
                                         "type": "string"
+                                    },
+                                    "modo": {
+                                        "type": "integer"
                                     }
                                 },
                                 "type": "object"
@@ -307,6 +310,40 @@
                     },
                     "500": {
                         "description": "Error general"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/deleteUsuario/{id_usuario}": {
+            "delete": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Elimina un usuario",
+                "description": "Elimina un usuario",
+                "operationId": "0f35bb832bdc6d9671afae7447de6d36",
+                "parameters": [
+                    {
+                        "name": "id_usuario",
+                        "in": "path",
+                        "description": "Id del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "404": {
+                        "description": "Registro no encontrado"
+                    },
+                    "500": {
+                        "description": "Error el servidor"
                     }
                 },
                 "security": [
