@@ -7,6 +7,7 @@ use App\Models\tt_t_rol as Rol;
 use App\Http\Controllers\Controller;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -20,11 +21,11 @@ use Carbon\Carbon;
  *      title="API de proyecto TT",
  *      description="Se implementan todos los métodos HTTP soportados por el Backend"
  * )
-*/
+ */
 
 class UserController extends Controller
 {
-     /**
+    /**
      * Se crea un usuario
      * El formato de la fecha es YYYY-MM-DD
      * Modo 1 para Registro por parte del cliente
@@ -57,7 +58,6 @@ class UserController extends Controller
      *     )
      * )
      */
-    
     public function store(Request $request)
     {
         try {
@@ -78,17 +78,17 @@ class UserController extends Controller
 
             //Modo 1: El cliente se registra
             //Modo 2: El administrador registra al usuario
-            if($modo == 1) {
+            if ($modo == 1) {
                 $request->validate([
                     'password' => 'required',
                 ]);
                 $pass = $request->password;
-            } else if($modo == 2) {
+            } else if ($modo == 2) {
                 $pass = str::random(8);
                 $sendEmail = true;
             }
 
-            
+
             $user = User::create([
                 'id_rol' => $request->id_rol,
                 'name' => $request->name,
@@ -102,7 +102,7 @@ class UserController extends Controller
 
             $role = $user->rol->rol_name;
 
-            if($sendEmail) {
+            if ($sendEmail) {
                 Mail::to($user->email)->send(new NewUserMail($user, $role, $pass));
             }
 
@@ -110,7 +110,6 @@ class UserController extends Controller
                 'message' => 'Usuario registrado correctamente',
                 'usuario' => $user,
             ], 201);
-        
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'message' => 'Error de validación',
@@ -122,7 +121,6 @@ class UserController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
-        
     }
 
     /**
@@ -171,7 +169,7 @@ class UserController extends Controller
                 $user = Auth::user();
                 $user->load('rol');
                 $token = $user->createToken('token')->plainTextToken;
-                
+
                 return response()->json(['token' => $token, 'user' => $user], 200);
             }
 
@@ -203,8 +201,8 @@ class UserController extends Controller
      *         description="Error general"
      *     )
      * )
-    */
-    
+     */
+
     public function getAllUsers(Request $request)
     {
         try {
@@ -226,7 +224,6 @@ class UserController extends Controller
                 'error' => $e->getMessage()
             ], 418);
         }
-
     }
 
     /**
@@ -254,11 +251,11 @@ class UserController extends Controller
      *     bearerFormat="JWT"
      * )
      */
-    
+
     public function logout(Request $request)
     {
         $user = $request->user();
-    
+
         if ($user) {
             $user->tokens()->delete();
             return response()->json(['message' => 'Cierre de sesión exitoso'], 200);
@@ -266,7 +263,7 @@ class UserController extends Controller
 
         return response()->json(['message' => 'No se pudo encontrar el usuario autenticado'], 500);
     }
-    
+
     /**
      * Se verifica si el token esta autorizado o no
      *
@@ -289,15 +286,18 @@ class UserController extends Controller
     {
         $user = $request->user();
         $user->rol;
-        if($user){
-            return response()->json([
-                'token'=>str_replace('Bearer ', '', $request->header('authorization')), 
-                'user'=>$user],
-            200);
+        if ($user) {
+            return response()->json(
+                [
+                    'token' => str_replace('Bearer ', '', $request->header('authorization')),
+                    'user' => $user
+                ],
+                200
+            );
         }
     }
 
-     /**
+    /**
      * Envía un correo electrónico para cambiar la contraseña
      *
      * @OA\post(
@@ -335,7 +335,7 @@ class UserController extends Controller
             $email = $request->email;
             $user = User::where('email', $email)->first();
 
-            if($user) {
+            if ($user) {
                 $token = Str::random(20);
                 $user->update(['recuperar_token' => $token]);
                 Mail::to($user->email)->send(new RecoveryPasswordMail($user));
@@ -344,7 +344,7 @@ class UserController extends Controller
                     'token' => $token
                 ], 200);
             }
-            
+
             return response()->json([
                 'message' => 'El usuario no existe'
             ], 404);
@@ -356,7 +356,7 @@ class UserController extends Controller
         }
     }
 
-     /**
+    /**
      * Este endpoint valida un token de recuperación y devuelve una respuesta basada en la validez del token.
      * @OA\Get(
      *     path="/api/validateRecoveryToken/{token}",
@@ -392,11 +392,12 @@ class UserController extends Controller
      * )
      */
 
-    public function validateRecoveryToken(string $token) {
+    public function validateRecoveryToken(string $token)
+    {
         try {
             $user = User::where('recuperar_token', $token)->first();
-            
-            if($user) {
+
+            if ($user) {
                 return response()->json(['message' => 'Token válido'], 200);
             }
             return response()->json(['message' => 'Token inválido'], 404);
@@ -413,7 +414,7 @@ class UserController extends Controller
         }
     }
 
-     /**
+    /**
      * Almacena la contraseña siempre
      *
      * @OA\post(
@@ -453,12 +454,13 @@ class UserController extends Controller
      *     )
      * )
      */
-    public function restorePassword (Request $request, string $token) {
+    public function restorePassword(Request $request, string $token)
+    {
         try {
-            $password = $request -> password;
+            $password = $request->password;
             $user = User::where('recuperar_token', $token)->first();
-            
-            if($user) {
+
+            if ($user) {
                 $user->update(['password' => bcrypt($password)]);
                 $user->update(['recuperar_token' => ""]);
                 return response()->json(['message' => 'Contraseña almacenada correctamente'], 201);
@@ -499,11 +501,12 @@ class UserController extends Controller
      *     )
      * )
      */
-    public function getDetailInscription (Request $request) {
-        try{
+    public function getDetailInscription(Request $request)
+    {
+        try {
             $inscripcion = $request->user()->inscripcion;
             $rol_id = $request->user()->rol;
-            if($inscripcion) {
+            if ($inscripcion) {
                 return response()->json([
                     'detalle' => $inscripcion,
                     'rol' => $rol_id
@@ -553,14 +556,15 @@ class UserController extends Controller
      *         description="Error el servidor"
      *     )
      * )
-     */  
-    public function deleteUsuario(Request $request, int $id) {
+     */
+    public function deleteUsuario(Request $request, int $id)
+    {
         try {
             $currentUser = $request->user();
-            if($currentUser->rol->id == 3) {
+            if ($currentUser->rol->id == 3) {
                 $user = User::find($id);
 
-                if($user) {
+                if ($user) {
                     $user->delete();
                     return response()->json(200);
                 }
@@ -568,6 +572,66 @@ class UserController extends Controller
             }
 
             return response()->json(403);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error en el servidor',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * El usuario cambia de contraseña
+     *
+     * @OA\Post(
+     *     path="/api/changePassword",
+     *     tags={"Users"},
+     *     summary="Usuario cambia la contraseña",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="email", type="string"),
+     *             @OA\Property(property="password", type="string"),
+     *             @OA\Property(property="new_password", type="string"),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Retorna un token para el usuario."
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Credenciales inválidas."
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error en el servidor."
+     *     )
+     * )
+     */
+    public function changePassword(Request $request)
+    {
+        try {
+            $request->validate([
+                'email' => 'required|email|exists:tt_t_usuario,email',
+                'password' => 'required',
+                'new_password' => 'required'
+            ]);
+
+            $user = User::where('email', $request->email)->first();
+
+            if (!$user) {
+                return response()->json(['message' => 'Usuario no encontrado'], 404);
+            }
+
+            if (!Hash::check($request->password, $user->password)) {
+                return response()->json(['message' => 'Credenciales inválidas'], 401);
+            }
+
+            $user->password = bcrypt($request->new_password);
+            $user->save();
+
+            return response()->json(['message' => 'Contraseña cambiada exitosamente'], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Error en el servidor',

@@ -23,6 +23,7 @@ Route::controller(UserController::class)->group(function () {
     Route::post('/sendEmailToRestorePassword', 'sendEmailToRestorePassword');
     Route::get('/validateRecoveryToken/{token}', 'validateRecoveryToken');
     Route::post('/restorePassword/{token}', 'restorePassword');
+    Route::post('/changePassword', 'changePassword');
     Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('/check-status', 'checkStatus');
         Route::post('/logout', 'logout');

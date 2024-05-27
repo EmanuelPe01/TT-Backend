@@ -353,6 +353,48 @@
                 ]
             }
         },
+        "/api/changePassword": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Usuario cambia la contraseña",
+                "description": "El usuario cambia de contraseña",
+                "operationId": "ce213d6095a8ca36415af176e3b67f65",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "new_password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Retorna un token para el usuario."
+                    },
+                    "401": {
+                        "description": "Credenciales inválidas."
+                    },
+                    "500": {
+                        "description": "Error en el servidor."
+                    }
+                }
+            }
+        },
         "/api/createTipoEjercicio": {
             "post": {
                 "tags": [
