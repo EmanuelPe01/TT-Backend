@@ -354,22 +354,19 @@
             }
         },
         "/api/changePassword": {
-            "post": {
+            "patch": {
                 "tags": [
                     "Users"
                 ],
                 "summary": "Usuario cambia la contraseña",
                 "description": "El usuario cambia de contraseña",
-                "operationId": "ce213d6095a8ca36415af176e3b67f65",
+                "operationId": "0baaa555ca44781efbc2c045316a24a3",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "email": {
-                                        "type": "string"
-                                    },
                                     "password": {
                                         "type": "string"
                                     },
@@ -392,7 +389,73 @@
                     "500": {
                         "description": "Error en el servidor."
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/changeInfoProfile/{id_usuario}": {
+            "patch": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Usuario cambia su información personal",
+                "description": "El usuario cambia su información personal",
+                "operationId": "5fd3607c3c904425e95af848ce8d3999",
+                "parameters": [
+                    {
+                        "name": "id_usuario",
+                        "in": "path",
+                        "description": "Id del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "firstSurname": {
+                                        "type": "string"
+                                    },
+                                    "secondSurname": {
+                                        "type": "string"
+                                    },
+                                    "telephone": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Retorna un token para el usuario."
+                    },
+                    "500": {
+                        "description": "Error en el servidor."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/createTipoEjercicio": {

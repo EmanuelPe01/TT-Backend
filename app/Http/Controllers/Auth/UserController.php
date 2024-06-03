@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -583,14 +584,14 @@ class UserController extends Controller
     /**
      * El usuario cambia de contraseña
      *
-     * @OA\Post(
+     * @OA\Patch(
      *     path="/api/changePassword",
      *     tags={"Users"},
+     *     security={{"bearerAuth": {}}},
      *     summary="Usuario cambia la contraseña",
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             @OA\Property(property="email", type="string"),
      *             @OA\Property(property="password", type="string"),
      *             @OA\Property(property="new_password", type="string"),
      *         )
@@ -612,13 +613,14 @@ class UserController extends Controller
     public function changePassword(Request $request)
     {
         try {
+            $email = $request->user()->email;
+
             $request->validate([
-                'email' => 'required|email|exists:tt_t_usuario,email',
                 'password' => 'required',
                 'new_password' => 'required'
             ]);
 
-            $user = User::where('email', $request->email)->first();
+            $user = User::where('email', $email)->first();
 
             if (!$user) {
                 return response()->json(['message' => 'Usuario no encontrado'], 404);
@@ -631,7 +633,78 @@ class UserController extends Controller
             $user->password = bcrypt($request->new_password);
             $user->save();
 
-            return response()->json(['message' => 'Contraseña cambiada exitosamente'], 200);
+            return response()->json(['message' => '¡Tu contraseña se modificó con éxito!'], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error en el servidor',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * El usuario cambia su información personal
+     *
+     * @OA\Patch(
+     *     path="/api/changeInfoProfile/{id_usuario}",
+     *     tags={"Users"},
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Parameter(
+     *         name="id_usuario",
+     *         in="path",
+     *         description="Id del usuario",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     summary="Usuario cambia su información personal",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="name", type="string"),
+     *             @OA\Property(property="firstSurname", type="string"),
+     *             @OA\Property(property="secondSurname", type="string"),
+     *             @OA\Property(property="telephone", type="string"),
+     *             @OA\Property(property="email", type="string"),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Retorna un token para el usuario."
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error en el servidor."
+     *     )
+     * )
+     */
+    public function changeInfoProfile(Request $request, $id) 
+    {
+        try {
+            $user = User::find($id);
+
+            if(!$user) {
+                return response()->json(404);
+            } else {
+                $request->validate([
+                    'name' => 'required',
+                    'firstSurname' => 'required',
+                    'secondSurname' => 'required',
+                    'telephone' => ['nullable', Rule::unique('tt_t_usuario', 'telephone')->ignore($user, 'id')],
+                    'email' => ['required', 'email', Rule::unique('tt_t_usuario', 'email')->ignore($user, 'id')],
+                ]);
+
+                $user->name = $request->name;
+                $user->firstSurname = $request->firstSurname;
+                $user->secondSurname = $request->secondSurname;
+                $user->telephone = $request->telephone;
+                $user->email = $request->email; 
+
+                $user->save();
+
+                return response()->json(['message' => 'Información guardada correctamente'],200);
+            }            
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Error en el servidor',

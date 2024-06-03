@@ -330,7 +330,7 @@ class EjercicioController extends Controller
          *     path="/api/updateEjercicio/{id_ejercicio}",
          *     tags={"Ejercicios"},
          *     summary="Actualiza un ejercicio",
-         *  *     @OA\Parameter(
+         *     @OA\Parameter(
          *         name="id_ejercicio",
          *         in="path",
          *         description="Id del ejercicio",

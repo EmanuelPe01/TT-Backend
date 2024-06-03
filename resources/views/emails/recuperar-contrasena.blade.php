@@ -5,7 +5,7 @@ Hola {{ $user->name }},
 
 Has solicitado restablecer tu contraseña en nuestra aplicación. Haz clic en el siguiente botón para cambiar tu contraseña:
 
-@component('mail::button', ['url' => 'http://localhost:4200/reset-password/'.$user->recuperar_token])
+@component('mail::button', ['url' => config('app.client_url').'/reset-password/'.$user->recuperar_token])
 Cambiar Contraseña
 @endcomponent
 

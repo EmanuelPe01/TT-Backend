@@ -9,7 +9,7 @@ Te recomendamos cambiar esta contraseña al iniciar sesión por primera vez.
 
 Contraseña: <strong>{{$pass}}</strong>
 
-@component('mail::button', ['url' => 'http://localhost:4200/'])
+@component('mail::button', ['url' => config('app.client_url')])
 Iniciar sesión
 @endcomponent
 
