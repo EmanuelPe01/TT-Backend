@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\tt_t_Rutina as Rutina;
 use App\Models\tt_t_DetalleRutina as DetalleRutina;
+use App\Models\TT_T_Resultados as Resultado;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-use Illuminate\Support\Arr;
 
 class RutinaController extends Controller
 {
@@ -52,8 +52,6 @@ class RutinaController extends Controller
      *     ),
      * )
      */
-
-
     public function storeWood(Request $request)
     {
         DB::beginTransaction();
@@ -265,6 +263,139 @@ class RutinaController extends Controller
                 'message' => 'Error general',
                 'error' => $e->getMessage()
             ], 500);
+        }
+    }
+
+    public function getRutina($id) 
+    {
+       try {
+            $rutina = Rutina::find($id);
+            if($rutina){
+                $rutina->load('inscripcion.cliente', 'detalleRutina.detalleEjercicio.unidadMedida');
+                $response = [
+                    'id' => $rutina->id,
+                    'id_inscripcion' => $rutina->id_inscripcion,
+                    'fecha_rutina' => ucfirst(Carbon::parse($rutina->fecha_rutina)->translatedFormat('l j \\de F Y')),
+                    'rondas' => $rutina->rondas,
+                    'tiempo' => $rutina->tiempo,
+                    'peso' => $rutina->peso,
+                    'halterofilia' => $rutina->halterofilia,
+                    'nombre_cliente' => $rutina->inscripcion->cliente->name.' '.
+                                       $rutina->inscripcion->cliente->firstSurname.' '.
+                                       $rutina->inscripcion->cliente->secondSurname,
+                    'peso_maximo' => $rutina->inscripcion->peso_maximo,
+                    'detalle_rutina' => $rutina->detalleRutina
+                ];
+
+                return response()->json($response, 200);
+            }
+
+            return response()->json([
+                'message' => 'Recurso no encontrado'
+            ], 404);
+       }  catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error general',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/saveResult",
+     *     tags={"Rutinas"},
+     *     summary="Se almacenan los resultados de una rutina",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"id_rutina", "rondas","tiempo", "comentarios"},
+     *             @OA\Property(property="id_rutina", type="integer", example="2"),
+     *             @OA\Property(property="rondas", type="integer", example=5),
+     *             @OA\Property(property="tiempo", type="string", example="10:20"),
+     *             @OA\Property(property="comentarios", type="string", example="Me faltaron 2 rondas"),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Resultados guardados correctamente",
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error general",
+     *     ),
+     * )
+     */
+    public function storeResult(Request $request)
+    {
+        try {
+            $request->validate([
+                'id_rutina' => 'required|integer|exists:tt_t_rutina,id',
+                'rondas' => 'required|integer',
+                'tiempo' => 'required',
+                'comentarios' => 'nullable|max:200',
+            ]);
+
+            $resultado = Resultado::create([
+                'id_rutina' => $request->id_rutina,
+                'rondas' => $request->rondas,
+                'tiempo' => $request->tiempo,
+                'comentarios' => $request->comentarios
+            ]);
+
+            return response()->json([
+                'message' => 'Registro exitoso',
+                'resultado' => $resultado
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json($e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Se obtienen los resultado de una rutina
+     *
+     * @OA\Get(
+     *     path="/api/getResultRoutine/{id_rutina}",
+     *     tags={"Rutinas"},
+     *     summary="Actualiza una inscripción",
+     *  *     @OA\Parameter(
+     *         name="id_rutina",
+     *         in="path",
+     *         description="Id de la rutina",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Devuelve el recurso solicitado"
+     *     ),
+     *      @OA\Response(
+     *         response=404,
+     *         description="Recurso no encontrado"
+     *     ),
+     *      @OA\Response(
+     *         response=500,
+     *         description="Error en la base de datos"
+     *     )
+     * )
+    */
+    public function getResultRoutine($id) 
+    {
+        try {
+            $resultado = Resultado::where('id_rutina', $id)->first();
+
+            if($resultado){
+                return response()->json($resultado, 200);
+            }
+            return response()->json([
+                'message' => 'Recurso no encontrado'
+            ], 404);
+        } catch (\Exception $e) {
+            return response()->json($e->getMessage(), 500);
         }
     }
 }

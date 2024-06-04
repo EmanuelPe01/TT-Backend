@@ -62,8 +62,11 @@ Route::controller(EjercicioController::class)->group(function () {
 Route::controller(RutinaController::class)->group(function (){
     Route::post('/createRutina', 'storeWood');
     Route::get('/showRutinas', 'showRutinas');
+    Route::get('/getRutina/{id_rutina}', 'getRutina');
     Route::delete('/deleteRutina/{id_rutina}', 'deleteRutina');
     Route::put('/updateRutina/{id_rutina}', 'updateRutina');
+    Route::post('/saveResult', 'storeResult');
+    Route::get('/getResultRoutine/{id_rutina}', 'getResultRoutine');
 });
 
 //Unidades de medida

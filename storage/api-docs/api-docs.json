@@ -1170,6 +1170,89 @@
                 }
             }
         },
+        "/api/saveResult": {
+            "post": {
+                "tags": [
+                    "Rutinas"
+                ],
+                "summary": "Se almacenan los resultados de una rutina",
+                "operationId": "97e83b393184a7684d5b753d0da19fe7",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id_rutina",
+                                    "rondas",
+                                    "tiempo",
+                                    "comentarios"
+                                ],
+                                "properties": {
+                                    "id_rutina": {
+                                        "type": "integer",
+                                        "example": "2"
+                                    },
+                                    "rondas": {
+                                        "type": "integer",
+                                        "example": 5
+                                    },
+                                    "tiempo": {
+                                        "type": "string",
+                                        "example": "10:20"
+                                    },
+                                    "comentarios": {
+                                        "type": "string",
+                                        "example": "Me faltaron 2 rondas"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Resultados guardados correctamente"
+                    },
+                    "500": {
+                        "description": "Error general"
+                    }
+                }
+            }
+        },
+        "/api/getResultRoutine/{id_rutina}": {
+            "get": {
+                "tags": [
+                    "Rutinas"
+                ],
+                "summary": "Actualiza una inscripción",
+                "description": "Se obtienen los resultado de una rutina",
+                "operationId": "4fb6585575dcf6a08fbe377a6d2e0a2e",
+                "parameters": [
+                    {
+                        "name": "id_rutina",
+                        "in": "path",
+                        "description": "Id de la rutina",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Devuelve el recurso solicitado"
+                    },
+                    "404": {
+                        "description": "Recurso no encontrado"
+                    },
+                    "500": {
+                        "description": "Error en la base de datos"
+                    }
+                }
+            }
+        },
         "/api/createUnidadMedida": {
             "post": {
                 "tags": [
