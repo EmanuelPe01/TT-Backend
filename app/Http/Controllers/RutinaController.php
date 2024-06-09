@@ -231,7 +231,7 @@ class RutinaController extends Controller
             foreach ($request->ejercicios as $detalle) {
                 if ($detalle['accion'] === 'agregar') {
                     DetalleRutina::create([
-                        'id_rutina' => $rutina->id, 
+                        'id_rutina' => $rutina->id,
                         'id_ejercicio' => $detalle['id_ejercicio'],
                         'cantidad_ejercicio' => $detalle['cantidad_ejercicio'],
                     ]);
@@ -266,11 +266,11 @@ class RutinaController extends Controller
         }
     }
 
-    public function getRutina($id) 
+    public function getRutina($id)
     {
-       try {
+        try {
             $rutina = Rutina::find($id);
-            if($rutina){
+            if ($rutina) {
                 $rutina->load('inscripcion.cliente', 'detalleRutina.detalleEjercicio.unidadMedida');
                 $response = [
                     'id' => $rutina->id,
@@ -280,9 +280,9 @@ class RutinaController extends Controller
                     'tiempo' => $rutina->tiempo,
                     'peso' => $rutina->peso,
                     'halterofilia' => $rutina->halterofilia,
-                    'nombre_cliente' => $rutina->inscripcion->cliente->name.' '.
-                                       $rutina->inscripcion->cliente->firstSurname.' '.
-                                       $rutina->inscripcion->cliente->secondSurname,
+                    'nombre_cliente' => $rutina->inscripcion->cliente->name . ' ' .
+                        $rutina->inscripcion->cliente->firstSurname . ' ' .
+                        $rutina->inscripcion->cliente->secondSurname,
                     'peso_maximo' => $rutina->inscripcion->peso_maximo,
                     'detalle_rutina' => $rutina->detalleRutina
                 ];
@@ -293,7 +293,7 @@ class RutinaController extends Controller
             return response()->json([
                 'message' => 'Recurso no encontrado'
             ], 404);
-       }  catch (\Exception $e) {
+        } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Error general',
                 'error' => $e->getMessage()
@@ -347,7 +347,6 @@ class RutinaController extends Controller
                 'message' => 'Registro exitoso',
                 'resultado' => $resultado
             ], 201);
-
         } catch (\Exception $e) {
             return response()->json($e->getMessage(), 500);
         }
@@ -382,15 +381,41 @@ class RutinaController extends Controller
      *         description="Error en la base de datos"
      *     )
      * )
-    */
-    public function getResultRoutine($id) 
+     */
+    public function getResultRoutine($id)
     {
         try {
             $resultado = Resultado::where('id_rutina', $id)->first();
 
-            if($resultado){
+            if ($resultado) {
                 return response()->json($resultado, 200);
             }
+            return response()->json([
+                'message' => 'Recurso no encontrado'
+            ], 404);
+        } catch (\Exception $e) {
+            return response()->json($e->getMessage(), 500);
+        }
+    }
+
+    public function uptadeResultRoutine(Request $request, $id)
+    {
+        try {
+            $resultado = Resultado::where('id_rutina', $id)->first();
+            $request->validate([
+                'rondas' => 'required|integer',
+                'tiempo' => 'required',
+                'comentarios' => 'nullable|max:200',
+            ]);
+            if ($resultado) {
+                $resultado->rondas = $request->rondas;
+                $resultado->tiempo = $request->tiempo;
+                $resultado->comentarios = $request->comentarios;
+
+                $resultado->save();
+                return response()->json($resultado, 200);
+            }
+
             return response()->json([
                 'message' => 'Recurso no encontrado'
             ], 404);

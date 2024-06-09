@@ -9,40 +9,40 @@ use Carbon\Carbon;
 class InscripcionController extends Controller
 {
     /**
-         * Se almacena una inscripcion para usuario
-         *
-         * @OA\Post(
-         *     path="/api/generateInscription",
-         *     tags={"Inscripciones"},
-         *     summary="Genera una inscripción",
-         *     @OA\RequestBody(
-         *         required=true,
-         *         @OA\JsonContent(
-         *             @OA\Property(property="id_user_cliente", type="integer"),
-         *             @OA\Property(property="id_user_entrenador", type="integer"),
-         *             @OA\Property(property="fecha_inicio", type="string"),
-         *             @OA\Property(property="peso_maximo", type="string"),
-         *             @OA\Property(property="estado", type="boolean"),
-         *         )
-         *     ),
-         *     @OA\Response(
-         *         response=200,
-         *         description="Se almacena un role."
-         *     ),
-         *      @OA\Response(
-         *         response=400,
-         *         description="Duplicidad de valores."
-         *     ),
-         *      @OA\Response(
-         *         response=500,
-         *         description="Error en la base de datos"
-         *     )
-         * )
-    */
+     * Se almacena una inscripcion para usuario
+     *
+     * @OA\Post(
+     *     path="/api/generateInscription",
+     *     tags={"Inscripciones"},
+     *     summary="Genera una inscripción",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="id_user_cliente", type="integer"),
+     *             @OA\Property(property="id_user_entrenador", type="integer"),
+     *             @OA\Property(property="fecha_inicio", type="string"),
+     *             @OA\Property(property="peso_maximo", type="string"),
+     *             @OA\Property(property="estado", type="boolean"),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Se almacena un role."
+     *     ),
+     *      @OA\Response(
+     *         response=400,
+     *         description="Duplicidad de valores."
+     *     ),
+     *      @OA\Response(
+     *         response=500,
+     *         description="Error en la base de datos"
+     *     )
+     * )
+     */
     public function store(Request $request)
     {
         try {
-            $request -> validate([
+            $request->validate([
                 'id_user_cliente' => 'required|exists:tt_t_usuario,id|es_cliente',
                 'id_user_entrenador' => 'required|exists:tt_t_usuario,id|es_entrenador',
                 'fecha_inicio' => 'required|date_format:Y-m-d',
@@ -62,7 +62,7 @@ class InscripcionController extends Controller
                 'message' => 'Inscripción generada correctamente',
                 'detail' => $inscripcion
             ], 201);
-        }  catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['message' => $e->getMessage()], 404);
         } catch (\Exception $e) {
             return response()->json([
@@ -73,22 +73,22 @@ class InscripcionController extends Controller
     }
 
     /**
-         * Se obtienen todos las inscripciones
-         *
-         * @OA\Get(
-         *     path="/api/allInscriptions",
-         *     tags={"Inscripciones"},
-         *     summary="Se obtienen todos las inscripciones",
-         *     @OA\Response(
-         *         response=200,
-         *         description="Retorna la informacion de todas las inscripciones"
-         *     ),
-         *     @OA\Response(
-         *         response="default",
-         *         description="Error"
-         *     )
-         * )
-    */
+     * Se obtienen todos las inscripciones
+     *
+     * @OA\Get(
+     *     path="/api/allInscriptions",
+     *     tags={"Inscripciones"},
+     *     summary="Se obtienen todos las inscripciones",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Retorna la informacion de todas las inscripciones"
+     *     ),
+     *     @OA\Response(
+     *         response="default",
+     *         description="Error"
+     *     )
+     * )
+     */
     public function getAllInscriptions()
     {
         $inscripciones = Inscripcion::with(['cliente' => function ($query) {
@@ -128,7 +128,8 @@ class InscripcionController extends Controller
      * )
      */
 
-    public function getInscriptionById(int $id_inscripcion) {
+    public function getInscriptionById(int $id_inscripcion)
+    {
         try {
             $inscripcion = Inscripcion::with(['cliente' => function ($query) {
                 $query->select('id', 'name', 'firstSurname', 'secondSurname');
@@ -145,66 +146,66 @@ class InscripcionController extends Controller
     }
 
     /**
-         * Se actualiza la inscripcion de un usuario
-         *
-         * @OA\Put(
-         *     path="/api/updateInscription/{id_inscripcion}",
-         *     tags={"Inscripciones"},
-         *     summary="Actualiza una inscripción",
-         *  *     @OA\Parameter(
-         *         name="id_inscripcion",
-         *         in="path",
-         *         description="Id de la inscripción",
-         *         required=true,
-         *         @OA\Schema(
-         *             type="string"
-         *         )
-         *     ),
-         *     @OA\RequestBody(
-         *         required=true,
-         *         @OA\JsonContent(
-         *             @OA\Property(property="id_user_entrenador", type="integer"),
-         *             @OA\Property(property="fecha_inicio", type="string"),
-         *             @OA\Property(property="peso_maximo", type="string"),
-         *             @OA\Property(property="estado", type="boolean"),
-         *         )
-         *     ),
-         *     @OA\Response(
-         *         response=200,
-         *         description="Se almacena un role."
-         *     ),
-         *      @OA\Response(
-         *         response=400,
-         *         description="Duplicidad de valores."
-         *     ),
-         *      @OA\Response(
-         *         response=500,
-         *         description="Error en la base de datos"
-         *     )
-         * )
-    */
-    public function updateInscription(Request $request, int $id_inscripcion){
+     * Se actualiza la inscripcion de un usuario
+     *
+     * @OA\Put(
+     *     path="/api/updateInscription/{id_inscripcion}",
+     *     tags={"Inscripciones"},
+     *     summary="Actualiza una inscripción",
+     *  *     @OA\Parameter(
+     *         name="id_inscripcion",
+     *         in="path",
+     *         description="Id de la inscripción",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="id_user_entrenador", type="integer"),
+     *             @OA\Property(property="fecha_inicio", type="string"),
+     *             @OA\Property(property="peso_maximo", type="string"),
+     *             @OA\Property(property="estado", type="boolean"),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Se almacena un role."
+     *     ),
+     *      @OA\Response(
+     *         response=400,
+     *         description="Duplicidad de valores."
+     *     ),
+     *      @OA\Response(
+     *         response=500,
+     *         description="Error en la base de datos"
+     *     )
+     * )
+     */
+    public function updateInscription(Request $request, int $id_inscripcion)
+    {
         try {
             $inscripcion = Inscripcion::find($id_inscripcion);
-            if($inscripcion){
-                $request -> validate([
+            if ($inscripcion) {
+                $request->validate([
                     'id_user_entrenador' => 'required|exists:tt_t_usuario,id|es_entrenador',
                     'fecha_inicio' => 'required|date_format:Y-m-d',
                     'peso_maximo' => 'required|regex:/^\d+(\.\d{1,2})?$/|gt:0',
                     'estado' => 'required'
                 ]);
-    
+
                 $inscripcion->id_user_entrenador = $request->id_user_entrenador;
                 $inscripcion->fecha_inicio = $request->fecha_inicio;
                 $inscripcion->peso_maximo = $request->peso_maximo;
                 $inscripcion->estado = $request->estado;
-    
+
                 $inscripcion->save();
                 return response()->json(['message' => 'Actualización exitosa'], 201);
             } else {
                 return response()->json(['message' => $e->getMessage()], 404);
             }
-            
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Error general',
@@ -236,16 +237,17 @@ class InscripcionController extends Controller
      *     )
      * )
      */
-    public function deleteInscription(int $id_inscripcion) {
+    public function deleteInscription(int $id_inscripcion)
+    {
         try {
             $inscripcion = Inscripcion::find($id_inscripcion);
 
-            if(!$inscripcion){
+            if (!$inscripcion) {
                 return response()->json(['message' => $e->getMessage()], 404);
             }
 
             $inscripcion->delete();
-            
+
             return response()->json([
                 'message' => 'Registro eliminado'
             ], 200);
@@ -257,13 +259,25 @@ class InscripcionController extends Controller
         }
     }
 
-    public function getActiveInscription() {
+    public function getActiveInscription(Request $request)
+    {
         try {
-            $inscripciones = Inscripcion::select('id', 'id_user_cliente', 'estado', 'peso_maximo')
-            ->where('estado', 1)
-            ->with(['cliente' => function ($query) {
-                $query->select('id', 'name', 'firstSurname', 'secondSurname');
-            }])->get();
+            $rol = $request->user()->rol;
+            if ($rol->id == "3") {
+                $inscripciones = Inscripcion::select('id', 'id_user_cliente', 'estado', 'peso_maximo')
+                    ->where('estado', 1)
+                    ->with(['cliente' => function ($query) {
+                        $query->select('id', 'name', 'firstSurname', 'secondSurname');
+                    }])->get();
+            } else if($rol->id == "2") {
+                $id_entrenador = $request->user()->id;
+                $inscripciones = Inscripcion::select('id', 'id_user_cliente', 'id_user_entrenador', 'estado', 'peso_maximo')
+                    ->where('estado', 1)
+                    ->where('id_user_entrenador', $id_entrenador)
+                    ->with(['cliente' => function ($query) {
+                        $query->select('id', 'name', 'firstSurname', 'secondSurname');
+                    }])->get();
+            }
             return response()->json($inscripciones, 200);
         } catch (\Exception $e) {
             return response()->json([

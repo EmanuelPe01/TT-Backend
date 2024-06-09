@@ -13,7 +13,6 @@ return new class extends Migration
             $table->unsignedBigInteger('id_inscripcion');
             $table->foreign('id_inscripcion')->references('id')->on('tt_t_inscripcion')->onDelete('cascade');
             $table->string('mensaje');
-            $table->date('fecha_post');
             $table->enum('tipo_usuario', ['cliente', 'entrenador']);
             $table->timestamps();
         });

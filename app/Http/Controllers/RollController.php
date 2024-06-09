@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\tt_t_Inscripcion as Inscripcion;
 use App\Models\tt_t_rol as Rol;
 use Illuminate\Http\Request;
 
@@ -134,6 +135,31 @@ class RollController extends Controller
             })->get();
             
             return response()->json($usuarios, 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error en el servidor',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getRoleByUser(Request $request) {
+        try {
+            $user = $request->user();
+            $rol = $user->rol->rol_name;
+            if($rol == 'Cliente') {
+                $inscripcion = Inscripcion::where('id_user_cliente', $user->id)
+                            ->with(['entrenador' => function ($query) {
+                                $query->select('id','name', 'firstSurname', 'secondSurname', 'telephone', 'email');
+                            }])->select('id', 'id_user_entrenador')
+                            ->first();
+                return response()->json([
+                    'rol' => $rol,
+                    'inscripcion' => $inscripcion,
+                ], 200);
+            } 
+            return response()->json(['rol' => $rol], 200);
+            
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Error en el servidor',

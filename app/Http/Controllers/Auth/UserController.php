@@ -265,6 +265,18 @@ class UserController extends Controller
         return response()->json(['message' => 'No se pudo encontrar el usuario autenticado'], 500);
     }
 
+    public function getUserById($id) {
+        try {
+            $user = User::find($id);
+            return response()->json($user, 200);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json([
+                'message' => 'Error general',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     /**
      * Se verifica si el token esta autorizado o no
      *
